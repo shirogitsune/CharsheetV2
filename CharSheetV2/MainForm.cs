@@ -218,13 +218,16 @@ namespace CharSheetV2
 				//Wire up the Attributes data table to the grid view
 				this.attributesDataGridView.DataSource = this.currentCharacter.characterAttributes;
 				this.attributesDataGridView.CurrentCell = null;
-				this.attributesDataGridView.AutoResizeColumn(3);
-				this.attributesDataGridView.AutoResizeColumn(4);
-				this.attributesDataGridView.AutoResizeColumn(5);
-				//Hide the aid and cid columns
-				this.attributesDataGridView.Columns[0].Visible = false;
-				this.attributesDataGridView.Columns[1].Visible = false;
-				
+				if (this.attributesDataGridView.Columns.Count > 0) {
+					this.attributesDataGridView.AutoResizeColumn(3);
+					this.attributesDataGridView.AutoResizeColumn(4);
+					this.attributesDataGridView.AutoResizeColumn(5);
+					
+					//Hide the aid and cid columns
+					this.attributesDataGridView.Columns[0].Visible = false;
+					this.attributesDataGridView.Columns[1].Visible = false;
+				}
+							
 				//Set total attribute points label
 				int attrSum = 0;
 				for (int x = 0; x < this.attributesDataGridView.Rows.Count; x++) {
@@ -235,12 +238,15 @@ namespace CharSheetV2
 				//Wire up the Skills data tabe to the grid view.
 				this.skillDataGridView.DataSource = this.currentCharacter.characterSkills;
 				this.skillDataGridView.CurrentCell = null;
-				this.skillDataGridView.AutoResizeColumn(3);
-				this.skillDataGridView.AutoResizeColumn(4);
-				this.skillDataGridView.AutoResizeColumn(5);
-				//Hide the sid and cid columns
-				this.skillDataGridView.Columns[0].Visible = false;
-				this.skillDataGridView.Columns[1].Visible = false;
+				if (this.skillDataGridView.Columns.Count > 0) {
+					this.skillDataGridView.AutoResizeColumn(3);
+					this.skillDataGridView.AutoResizeColumn(4);
+					this.skillDataGridView.AutoResizeColumn(5);
+				
+					//Hide the sid and cid columns
+					this.skillDataGridView.Columns[0].Visible = false;
+					this.skillDataGridView.Columns[1].Visible = false;
+				}
 				
 				//Set total skill points label;
 				int skillSum = 0;
