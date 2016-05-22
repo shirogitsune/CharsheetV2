@@ -1,0 +1,76 @@
+Character Table:
+-=-=-=-=-=-=-=-=-
+cid
+name
+callsign
+species
+gender
+height
+weight
+age
+affiliation
+rank
+karma
+experience
+background
+advantages
+notes
+inventory
+picture
+isnpc
+
+CREATE TABLE IF NOT EXISTS 'charcters'(
+cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+name TEXT NULL,
+callsign TEXT NULL,
+species TEXT NULL,
+gender TEXT NULL,
+height TEXT NULL,
+weight TEXT NULL,
+age INTEGER NOT NULL DEFAULT 18,
+affiliation TEXT NULL,
+rank TEXT NULL,
+karma INTEGER NOT NULL DEFAULT 0,
+experience INTEGER NOT NULL DEFAULT 0,
+background TEXT NULL,
+advantages TEXT NULL,
+notes TEXT NULL,
+picture BLOB NULL,
+isnpc NUMERIC NOT NULL DEFAULT 0
+);
+
+Attributes Table:
+-=-=-=-=-=-=-=-=-
+aid
+cid
+attribute
+points
+modifier
+exempt
+
+CREATE TABLE IF NOT EXISTS 'attributes'(
+aid INTEGER NULL,
+cid INTEGER NULL,
+attribute TEXT NULL,
+points INTEGER NULL NOT NULL DEFAULT 0,
+modifier INTEGER NOT NULL DEFAULT 0,
+exempt NUMERIC NOT NULL DEFAULT 0
+);
+
+Skills Table:
+-=-=-=-=-=-=-=-=-
+sid
+cid
+skill
+points
+modifier
+exempt
+
+CREATE TABLE IF NOT EXISTS 'skills'(
+sid INTEGER NULL,
+cid INTEGER NULL,
+skill TEXT NULL,
+points INTEGER NULL NOT NULL DEFAULT 0,
+modifier INTEGER NOT NULL DEFAULT 0,
+exempt NUMERIC NOT NULL DEFAULT 0
+);
