@@ -60,7 +60,7 @@ namespace CharSheetV2
 			this.label1.Size = new System.Drawing.Size(179, 114);
 			this.label1.TabIndex = 1;
 			this.label1.Text = "Written By: \r\nJustin Pearce (aka Shirogitsune)\r\nwhitefox@guardianfox.net\r\nhttp://" +
-			"www.guardianfox.net\r\n\r\nWritten as a replacement to CharSheet by TerranFox!";
+			"www.guardianfox.net\r\n\r\nWritten as a replacement to CharSheet by TerrinFox terrin_fox@hotmail.com !";
 			// 
 			// aboutOk
 			// 
