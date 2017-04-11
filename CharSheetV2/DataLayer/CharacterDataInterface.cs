@@ -933,6 +933,7 @@ namespace CharSheetV2.DataLayer
 			String createSkills = "CREATE TABLE IF NOT EXISTS skills (sid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cid INTEGER NULL, skill TEXT NULL, " + 
 								  "points INTEGER NULL NOT NULL DEFAULT 0, modifier INTEGER NOT NULL DEFAULT 0, " +
 				                  "exempt NUMERIC NOT NULL DEFAULT 0);";
+			String createConfig = "CREATE TABLE IF NOT EXISTS config (cid INTEGER PRIMARY KEY, configKey TEXT NOT NULL, configValue TEXT NOT NULL)"; 
 			using(SQLiteConnection db = new SQLiteConnection(this.dbConnectionString)){
 				db.Open();
 				using(SQLiteCommand cmd = new SQLiteCommand(createCharacters, db)){
@@ -942,6 +943,9 @@ namespace CharSheetV2.DataLayer
 					cmd.ExecuteNonQuery();
 				}
 				using(SQLiteCommand cmd = new SQLiteCommand(createSkills, db)){
+					cmd.ExecuteNonQuery();
+				}
+				using(SQLiteCommand cmd = new SQLiteCommand(createConfig, db)){
 					cmd.ExecuteNonQuery();
 				}
 				db.Close();

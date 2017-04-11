@@ -1,5 +1,5 @@
 ﻿/// <summary>
-/// This object model represents the data and oeprations that make up a Character Sheet. It provides getters and setters
+/// This object model represents the data and operations that make up a Character Sheet. It provides getters and setters
 /// for the more complicated character data while giving direct access to most of the simpler data types.
 /// Author: Justin Pearce <whitefox@guardianfox.net>
 /// </summary>
@@ -12,7 +12,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using CharSheetV2.DataLayer;
 
-namespace CharSheetV2
+namespace CharSheetV2.Models
 {
 	/// <summary>
 	/// Model object for representing a character sheet. This model includes the
@@ -68,7 +68,7 @@ namespace CharSheetV2
 		/// tables.
 		/// </summary>
 		/// <param name="cid">The id of the record in he characters table.</param>
-		/// <returns>Tru on success or false on no record found.</returns>
+		/// <returns>True on success or false on no record found.</returns>
 		public Boolean LoadCharacterById(int cid=-1)
 		{
 			//Get table object from the database.

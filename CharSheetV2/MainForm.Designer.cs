@@ -105,6 +105,7 @@ namespace CharSheetV2
 			this.asCharsheetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gMModesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.fateTimerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.setDefaultDiceSidesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -115,6 +116,7 @@ namespace CharSheetV2
 			this.d20Modifier = new System.Windows.Forms.ComboBox();
 			this.d20Button = new System.Windows.Forms.Button();
 			this.fatesHand = new System.Windows.Forms.Timer(this.components);
+			this.configureFatesHandToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.skillDataGridView)).BeginInit();
@@ -801,19 +803,28 @@ namespace CharSheetV2
 			// gMModesToolStripMenuItem
 			// 
 			this.gMModesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.fateTimerToolStripMenuItem});
+									this.fateTimerToolStripMenuItem,
+									this.configureFatesHandToolStripMenuItem,
+									this.setDefaultDiceSidesToolStripMenuItem});
 			this.gMModesToolStripMenuItem.Name = "gMModesToolStripMenuItem";
-			this.gMModesToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
+			this.gMModesToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
 			this.gMModesToolStripMenuItem.Text = "GM Tools";
 			// 
 			// fateTimerToolStripMenuItem
 			// 
 			this.fateTimerToolStripMenuItem.CheckOnClick = true;
 			this.fateTimerToolStripMenuItem.Name = "fateTimerToolStripMenuItem";
-			this.fateTimerToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+			this.fateTimerToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
 			this.fateTimerToolStripMenuItem.Text = "Fate\'s Hand";
 			this.fateTimerToolStripMenuItem.ToolTipText = "Selects a character at random on an interval and notifies you of the selection";
 			this.fateTimerToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.FatesHandCheckedStateChanged);
+			// 
+			// setDefaultDiceSidesToolStripMenuItem
+			// 
+			this.setDefaultDiceSidesToolStripMenuItem.Name = "setDefaultDiceSidesToolStripMenuItem";
+			this.setDefaultDiceSidesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+			this.setDefaultDiceSidesToolStripMenuItem.Text = "Default Dice Sides...";
+			this.setDefaultDiceSidesToolStripMenuItem.Click += new System.EventHandler(this.SetDefaultDiceSidesToolStripMenuItemClick);
 			// 
 			// helpToolStripMenuItem
 			// 
@@ -918,6 +929,13 @@ namespace CharSheetV2
 			this.fatesHand.Interval = 900000;
 			this.fatesHand.Tick += new System.EventHandler(this.FatesHandTick);
 			// 
+			// configureFatesHandToolStripMenuItem
+			// 
+			this.configureFatesHandToolStripMenuItem.Name = "configureFatesHandToolStripMenuItem";
+			this.configureFatesHandToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+			this.configureFatesHandToolStripMenuItem.Text = "Configure Fate\'s Hand";
+			this.configureFatesHandToolStripMenuItem.Click += new System.EventHandler(this.ConfigureFatesHandToolStripMenuItemClick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -963,6 +981,8 @@ namespace CharSheetV2
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.ToolStripMenuItem configureFatesHandToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem setDefaultDiceSidesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importDatabaseToolStripMenuItem;
 		private System.Windows.Forms.Button ClearCheckedButton;
 		private System.Windows.Forms.Button ClearPicture;

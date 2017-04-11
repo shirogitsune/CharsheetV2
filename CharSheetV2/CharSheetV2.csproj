@@ -48,6 +48,8 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -75,8 +77,11 @@
     <Compile Include="AboutDialog.Designer.cs">
       <DependentUpon>AboutDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="characterSheetModel.cs" />
     <Compile Include="DataLayer\CharacterDataInterface.cs" />
+    <Compile Include="DiceSidesDialog.cs" />
+    <Compile Include="DiceSidesDialog.Designer.cs">
+      <DependentUpon>DiceSidesDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImageViewer.cs" />
     <Compile Include="ImageViewer.Designer.cs">
       <DependentUpon>ImageViewer.cs</DependentUpon>
@@ -85,6 +90,8 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\characterSheetModel.cs" />
+    <Compile Include="Models\configurationModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <finally Include="characterDataInterface.cs" />
@@ -92,6 +99,9 @@
   <ItemGroup>
     <EmbeddedResource Include="AboutDialog.resx">
       <DependentUpon>AboutDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DiceSidesDialog.resx">
+      <DependentUpon>DiceSidesDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ImageViewer.resx">
       <DependentUpon>ImageViewer.cs</DependentUpon>
@@ -105,6 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DataLayer" />
+    <Folder Include="Models" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

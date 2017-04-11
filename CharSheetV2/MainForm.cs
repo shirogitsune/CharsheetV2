@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Collections.Generic;
 using CharSheetV2.DataLayer;
+using CharSheetV2.Models;
 
 namespace CharSheetV2
 {
@@ -41,6 +42,7 @@ namespace CharSheetV2
 			this.skillCheck = false;
 			this.changesMade = false;
 			this.deletingCharacters = false;
+			this.loadConfig();
 			this.InitCharacterList();
 		}
 		
@@ -127,6 +129,15 @@ namespace CharSheetV2
 			}
 		}
 
+		/// <summary>
+		/// This method populates the configuration of the application from the table stored in the data files. If non exists, it 
+		/// populates some defaults.
+		/// </summary>
+		private void loadConfig() {
+			//TODO: Load Config
+			//DataTable config = database.SelectFields("config", new String[] {"configKey", "configValue"});
+		}
+		
 		/// <summary>
 		/// This method populates the form fields with the data of the character selected from the
 		/// character list. It also initailizes the DataGridViews that represent the 
@@ -273,6 +284,30 @@ namespace CharSheetV2
 			}else{
 				this.fatesHand.Stop();
 			}
+		}
+		
+		/// <summary>
+		/// Opens a dialog allowing for the configuration of the number of minutes
+		/// Fate's Hand will wait between ticks.
+		/// </summary>
+		/// <param name="sender">The sender</param>
+		/// <param name="e">The event arguments</param>
+		public void ConfigureFatesHandToolStripMenuItemClick(object sender, System.EventArgs e)
+		{
+			//TODO: Implement configuration and dialog for Fate's Hand.
+		}
+		
+		/// <summary>
+		/// Opens a dialog allowing for the configuration of the number of dice
+		/// sides to default to.
+		/// </summary>
+		/// <param name="sender">The sender</param>
+		/// <param name="e">The event arguments.</param>
+		public void SetDefaultDiceSidesToolStripMenuItemClick(object sender, System.EventArgs e)
+		{
+			DiceSidesDialog dsDialog = new DiceSidesDialog(20);
+			dsDialog.ShowDialog();
+			//TODO: Get dice value from dialog.
 		}
 		
 		/// <summary>
