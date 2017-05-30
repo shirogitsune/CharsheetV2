@@ -38,3 +38,8 @@ To run the program, we only need the three files in the same folder:
 * CharSheetData.db
 
 The application is portable and requires .NET 4.0 or greater to run.
+
+Tip Jar
+-------------------
+
+If you think it's worthwhile, toss some coffee money my way [here](https://paypal.me/whitefoxstudios). I would appreciate it. ^.^
