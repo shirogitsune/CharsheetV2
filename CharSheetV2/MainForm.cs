@@ -20,12 +20,14 @@ namespace CharSheetV2
 	/// </summary>
 	public partial class MainForm : Form
 	{
+		private int diceSides = 20;
 		private Boolean skillCheck;
 		private Boolean switchingChars;
 		private Boolean changesMade;
 		private Boolean deletingCharacters; 
 		private CharacterDataInterface database;
 		private CharacterSheetModel currentCharacter;
+		private ConfigurationModel config;
 		private List<CharacterSheetModel> castOfCharacters;
 		private List<Combatant> brawlers;
 		public enum SkillCheckType {SKILL, ATTRIBUTE};
@@ -135,7 +137,10 @@ namespace CharSheetV2
 		/// </summary>
 		private void loadConfig() {
 			//TODO: Load Config
-			//DataTable config = database.SelectFields("config", new String[] {"configKey", "configValue"});
+			this.config = new ConfigurationModel();
+			this.diceSides = this.config.GetDiceSides();
+			this.fatesHand.Interval = this.config.GetFatesHandTimer();
+			//TODO: Set Fates hand on or off setting. 
 		}
 		
 		/// <summary>
@@ -305,9 +310,10 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments.</param>
 		public void SetDefaultDiceSidesToolStripMenuItemClick(object sender, System.EventArgs e)
 		{
-			DiceSidesDialog dsDialog = new DiceSidesDialog(20);
+			DiceSidesDialog dsDialog = new DiceSidesDialog(this.diceSides);
 			dsDialog.ShowDialog();
-			//TODO: Get dice value from dialog.
+			this.diceSides = dsDialog.numberOfDiceSides;
+			this.d20Button.Text = "D"+this.diceSides.ToString();
 		}
 		
 		/// <summary>
@@ -325,7 +331,7 @@ namespace CharSheetV2
 				this.notificationLabel.Text = "Fate's Hand has selected "+castOfCharacters[fated].characterName.ToString()+"!";
 				MessageBox.Show("Fate's Hand has selected "+castOfCharacters[fated].characterName.ToString()+"!", "Fate's Hand", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 			}
-			//If the timer is still a go, restart the timeer.
+			//If the timer is still a go, restart the timer.
 			if(this.fateTimerToolStripMenuItem.Checked){
 				this.fatesHand.Start();
 			}
@@ -361,16 +367,18 @@ namespace CharSheetV2
 		public void D20ButtonClick(object sender, EventArgs e)
 		{
 			//Get the die value  (1D20)
-			int dieValue = this.RollDie(20);
+			int diceCount = Int32.Parse(this.diceCount.Value.ToString());
+			int dieValue = this.RollDie(this.diceSides, diceCount);
 			
 			//If there mod value is set, add it. Otherwise, don't.
 			int modValue = 0;
 			if( d20Modifier.SelectedIndex != -1 ){
 				Int32.TryParse(d20Modifier.SelectedItem.ToString(), out modValue);
-				this.notificationLabel.Text = "Rolled D20 and got "+(dieValue+modValue)+" ("+modValue+")...";
+				this.notificationLabel.Text = "Rolled "+diceCount+" D"+this.diceSides.ToString()+" and got "+(dieValue+modValue)+" ("+modValue+")...";
 			}else{
-				this.notificationLabel.Text = "Rolled D20 and got "+dieValue+"...";
+				this.notificationLabel.Text = "Rolled "+diceCount+" D"+this.diceSides.ToString()+" and got "+dieValue+"...";
 			}
+			this.diceCount.Value=1;
 		}
 		
 		/// <summary>
@@ -378,10 +386,14 @@ namespace CharSheetV2
 		/// </summary>
 		/// <param name="sides">The number of sides to the 'die'</param>
 		/// <returns>The result of the dice 'roll'</returns>
-		public int RollDie(int sides){
+		public int RollDie(int sides, int count){
 			//Initialize a psudo-random and pick a number between 1 and n.
 			Random dice = new Random();
-			return dice.Next(1, sides+1);
+			int diceTotal = 0, diceToRoll = count;
+			for(int i = diceToRoll; i > 0; i--) {
+				diceTotal += dice.Next(1, sides+1);
+			}
+			return diceTotal;
 		}
 		
 		/// <summary>
@@ -1421,7 +1433,7 @@ namespace CharSheetV2
 					this.brawlers.Add(fighter);
 					
 					//Roll GM dice
-					int gmDice = this.RollDie(20);
+					int gmDice = this.RollDie(this.diceSides, Int32.Parse(this.diceCount.Value.ToString()));
 					statistics += "GM Rolled: " + gmDice + "\n------------\n\n";
 					//Flag failed rolls
 					for( int x = 0; x < this.brawlers.Count; x++) {
@@ -1473,7 +1485,7 @@ namespace CharSheetV2
 					int points = Convert.ToInt32(currentGridView.Rows[rowIndex].Cells[3].Value);
 					points += Convert.ToInt32(currentGridView.Rows[rowIndex].Cells[4].Value);
 					//Get the GM's die roll
-					int roll = this.RollDie(20);
+					int roll = this.RollDie(this.diceSides, Int32.Parse(this.diceCount.Value.ToString()));
 					switch (roll) {
 						case 1: //Critical Success
 							this.notificationLabel.Text = "Critical success!\n(Rolled " + roll + ")";
@@ -1500,6 +1512,7 @@ namespace CharSheetV2
 					this.notificationLabel.Text = "Not a valid row. Try again.";
 				}
 			}
+			this.diceCount.Value = 1;
 		}
 		
 		/// <summary>

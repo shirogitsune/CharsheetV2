@@ -17,7 +17,7 @@ namespace CharSheetV2
 	/// </summary>
 	public partial class DiceSidesDialog : Form
 	{
-		private int numberOfDiceSides;
+		public int numberOfDiceSides;
 		public DiceSidesDialog(int diceSides)
 		{
 			//

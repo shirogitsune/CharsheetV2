@@ -105,6 +105,7 @@ namespace CharSheetV2
 			this.asCharsheetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gMModesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.fateTimerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.configureFatesHandToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.setDefaultDiceSidesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -116,7 +117,7 @@ namespace CharSheetV2
 			this.d20Modifier = new System.Windows.Forms.ComboBox();
 			this.d20Button = new System.Windows.Forms.Button();
 			this.fatesHand = new System.Windows.Forms.Timer(this.components);
-			this.configureFatesHandToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.diceCount = new System.Windows.Forms.NumericUpDown();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.skillDataGridView)).BeginInit();
@@ -140,6 +141,7 @@ namespace CharSheetV2
 			this.statusStrip1.SuspendLayout();
 			this.groupBox8.SuspendLayout();
 			this.groupBox9.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.diceCount)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// groupBox1
@@ -819,6 +821,13 @@ namespace CharSheetV2
 			this.fateTimerToolStripMenuItem.ToolTipText = "Selects a character at random on an interval and notifies you of the selection";
 			this.fateTimerToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.FatesHandCheckedStateChanged);
 			// 
+			// configureFatesHandToolStripMenuItem
+			// 
+			this.configureFatesHandToolStripMenuItem.Name = "configureFatesHandToolStripMenuItem";
+			this.configureFatesHandToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+			this.configureFatesHandToolStripMenuItem.Text = "Configure Fate\'s Hand";
+			this.configureFatesHandToolStripMenuItem.Click += new System.EventHandler(this.ConfigureFatesHandToolStripMenuItemClick);
+			// 
 			// setDefaultDiceSidesToolStripMenuItem
 			// 
 			this.setDefaultDiceSidesToolStripMenuItem.Name = "setDefaultDiceSidesToolStripMenuItem";
@@ -880,6 +889,7 @@ namespace CharSheetV2
 			// 
 			// groupBox9
 			// 
+			this.groupBox9.Controls.Add(this.diceCount);
 			this.groupBox9.Controls.Add(this.d20Modifier);
 			this.groupBox9.Controls.Add(this.skillDiceButton);
 			this.groupBox9.Controls.Add(this.d20Button);
@@ -916,9 +926,9 @@ namespace CharSheetV2
 			// d20Button
 			// 
 			this.d20Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.d20Button.Location = new System.Drawing.Point(7, 18);
+			this.d20Button.Location = new System.Drawing.Point(56, 18);
 			this.d20Button.Name = "d20Button";
-			this.d20Button.Size = new System.Drawing.Size(111, 23);
+			this.d20Button.Size = new System.Drawing.Size(62, 23);
 			this.d20Button.TabIndex = 1;
 			this.d20Button.Text = "D20";
 			this.d20Button.UseVisualStyleBackColor = true;
@@ -929,12 +939,22 @@ namespace CharSheetV2
 			this.fatesHand.Interval = 900000;
 			this.fatesHand.Tick += new System.EventHandler(this.FatesHandTick);
 			// 
-			// configureFatesHandToolStripMenuItem
+			// diceCount
 			// 
-			this.configureFatesHandToolStripMenuItem.Name = "configureFatesHandToolStripMenuItem";
-			this.configureFatesHandToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-			this.configureFatesHandToolStripMenuItem.Text = "Configure Fate\'s Hand";
-			this.configureFatesHandToolStripMenuItem.Click += new System.EventHandler(this.ConfigureFatesHandToolStripMenuItemClick);
+			this.diceCount.Location = new System.Drawing.Point(8, 18);
+			this.diceCount.Minimum = new decimal(new int[] {
+									1,
+									0,
+									0,
+									0});
+			this.diceCount.Name = "diceCount";
+			this.diceCount.Size = new System.Drawing.Size(42, 20);
+			this.diceCount.TabIndex = 3;
+			this.diceCount.Value = new decimal(new int[] {
+									1,
+									0,
+									0,
+									0});
 			// 
 			// MainForm
 			// 
@@ -978,9 +998,11 @@ namespace CharSheetV2
 			this.statusStrip1.PerformLayout();
 			this.groupBox8.ResumeLayout(false);
 			this.groupBox9.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.diceCount)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.NumericUpDown diceCount;
 		private System.Windows.Forms.ToolStripMenuItem configureFatesHandToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem setDefaultDiceSidesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importDatabaseToolStripMenuItem;
