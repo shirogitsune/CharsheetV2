@@ -82,6 +82,10 @@
     <Compile Include="DiceSidesDialog.Designer.cs">
       <DependentUpon>DiceSidesDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="FatesHandDialog.cs" />
+    <Compile Include="FatesHandDialog.Designer.cs">
+      <DependentUpon>FatesHandDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImageViewer.cs" />
     <Compile Include="ImageViewer.Designer.cs">
       <DependentUpon>ImageViewer.cs</DependentUpon>
@@ -102,6 +106,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DiceSidesDialog.resx">
       <DependentUpon>DiceSidesDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FatesHandDialog.resx">
+      <DependentUpon>FatesHandDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ImageViewer.resx">
       <DependentUpon>ImageViewer.cs</DependentUpon>

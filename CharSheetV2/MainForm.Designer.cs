@@ -114,10 +114,10 @@ namespace CharSheetV2
 			this.groupBox8 = new System.Windows.Forms.GroupBox();
 			this.notificationLabel = new System.Windows.Forms.Label();
 			this.groupBox9 = new System.Windows.Forms.GroupBox();
+			this.diceCount = new System.Windows.Forms.NumericUpDown();
 			this.d20Modifier = new System.Windows.Forms.ComboBox();
 			this.d20Button = new System.Windows.Forms.Button();
 			this.fatesHand = new System.Windows.Forms.Timer(this.components);
-			this.diceCount = new System.Windows.Forms.NumericUpDown();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.skillDataGridView)).BeginInit();
@@ -900,6 +900,23 @@ namespace CharSheetV2
 			this.groupBox9.TabStop = false;
 			this.groupBox9.Text = "Dice";
 			// 
+			// diceCount
+			// 
+			this.diceCount.Location = new System.Drawing.Point(8, 18);
+			this.diceCount.Minimum = new decimal(new int[] {
+									1,
+									0,
+									0,
+									0});
+			this.diceCount.Name = "diceCount";
+			this.diceCount.Size = new System.Drawing.Size(42, 20);
+			this.diceCount.TabIndex = 3;
+			this.diceCount.Value = new decimal(new int[] {
+									1,
+									0,
+									0,
+									0});
+			// 
 			// d20Modifier
 			// 
 			this.d20Modifier.AllowDrop = true;
@@ -938,23 +955,6 @@ namespace CharSheetV2
 			// 
 			this.fatesHand.Interval = 900000;
 			this.fatesHand.Tick += new System.EventHandler(this.FatesHandTick);
-			// 
-			// diceCount
-			// 
-			this.diceCount.Location = new System.Drawing.Point(8, 18);
-			this.diceCount.Minimum = new decimal(new int[] {
-									1,
-									0,
-									0,
-									0});
-			this.diceCount.Name = "diceCount";
-			this.diceCount.Size = new System.Drawing.Size(42, 20);
-			this.diceCount.TabIndex = 3;
-			this.diceCount.Value = new decimal(new int[] {
-									1,
-									0,
-									0,
-									0});
 			// 
 			// MainForm
 			// 

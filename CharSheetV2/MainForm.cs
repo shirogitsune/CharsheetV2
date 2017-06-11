@@ -140,7 +140,7 @@ namespace CharSheetV2
 			this.config = new ConfigurationModel();
 			this.diceSides = this.config.GetDiceSides();
 			this.fatesHand.Interval = this.config.GetFatesHandTimer();
-			//TODO: Set Fates hand on or off setting. 
+			this.configureFatesHandToolStripMenuItem.Checked = this.config.GetFatesHand();
 		}
 		
 		/// <summary>
@@ -299,7 +299,13 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void ConfigureFatesHandToolStripMenuItemClick(object sender, System.EventArgs e)
 		{
-			//TODO: Implement configuration and dialog for Fate's Hand.
+			FatesHandDialog fhDialog = new FatesHandDialog(this.fatesHand.Enabled, this.fatesHand.Interval);
+			fhDialog.ShowDialog();
+			this.fatesHand.Interval = fhDialog.fatesHandTimerMillis;
+			if(this.fateTimerToolStripMenuItem.Checked){
+				this.fatesHand.Stop();
+				this.fatesHand.Start();
+			}
 		}
 		
 		/// <summary>

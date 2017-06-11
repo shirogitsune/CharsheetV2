@@ -23,7 +23,7 @@ namespace CharSheetV2.Models
 	{
 		private bool fatesHandSetting = false;
 		private int diceSides = 20; //D20 FTW!
-		private int fatesHandTimer = 900; //15 minutes by default
+		private int fatesHandTimer = 900000; //15 minutes by default
 				
 		private bool isVolatile = false;
 		
