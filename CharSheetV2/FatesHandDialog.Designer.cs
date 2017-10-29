@@ -56,7 +56,6 @@ namespace CharSheetV2
 			this.fatesHandMinutes.Name = "fatesHandMinutes";
 			this.fatesHandMinutes.Size = new System.Drawing.Size(82, 26);
 			this.fatesHandMinutes.TabIndex = 1;
-			this.fatesHandMinutes.ValueChanged += new System.EventHandler(this.NumericUpDown1ValueChanged);
 			// 
 			// label1
 			// 
@@ -67,7 +66,6 @@ namespace CharSheetV2
 			this.label1.TabIndex = 2;
 			this.label1.Text = "Minutes Until Fate\'s Hand Chooses";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.label1.Click += new System.EventHandler(this.Label1Click);
 			// 
 			// saveButton
 			// 

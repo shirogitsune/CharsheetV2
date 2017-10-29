@@ -42,7 +42,7 @@ namespace CharSheetV2.DataLayer
 					System.IO.File.Create(this.dbFileLocation).Close();
 					//Set the connection string.
 					this.dbConnectionString=String.Format("Data Source={0};Version=3;New=True;UTF8Encoding=true;compress=true;", this.dbFileLocation);
-				}catch (Exception e){
+				} catch (Exception e){
 					throw new Exception("Could not create database file.", e);
 				}
 			}
@@ -65,7 +65,7 @@ namespace CharSheetV2.DataLayer
 					//If it does not exist, create and close the file and set the connection string.
 					System.IO.File.Create(this.dbFileLocation).Close();
 					this.dbConnectionString=String.Format("Data Source={0};Version=3;New=True;UTF8Encoding=true;compress=true;", this.dbFileLocation);
-				}catch (Exception e){
+				} catch (Exception e){
 					throw new Exception("Could not create database file.", e);
 				}
 			}
@@ -128,7 +128,7 @@ namespace CharSheetV2.DataLayer
 					dummyTable.Columns.Add(fields[i].ToString());
 				}
 				return dummyTable;
-			}catch(Exception e){
+			} catch(Exception e){
 				throw new Exception("Could not retrieve from table "+tableName, e);
 			}
 			                                   
@@ -189,7 +189,7 @@ namespace CharSheetV2.DataLayer
 					dummyTable.Columns.Add(fields[i].ToString());
 				}
 				return dummyTable;
-			}catch(Exception e){
+			} catch(Exception e){
 				throw new Exception("Could not retrieve from table "+tableName, e);
 			}
 		}
@@ -240,7 +240,7 @@ namespace CharSheetV2.DataLayer
 					db.Close();
 					return dataValue;
 				}
-			}catch(Exception e){
+			} catch(Exception e){
 				throw new Exception("Could not retrieve from table "+tableName, e);
 			}					
 		}
@@ -249,7 +249,6 @@ namespace CharSheetV2.DataLayer
 		/// Provides a method for selecting specific records based on the value of a key field.
 		/// </summary>
 		/// <param name="tableName">Name of the table to select from</param>
-		/// <param name="fields">Fields to return</param>
 		/// <param name="key">Index of the key field</param>
 		/// <param name="search">Value to select by</param>
 		/// <returns>Selected rows as a DataTable</returns>
@@ -300,7 +299,7 @@ namespace CharSheetV2.DataLayer
 					dummyTable.Columns.Add(fields[i].ToString());
 				}
 				return dummyTable;
-			}catch(Exception e){
+			} catch(Exception e){
 				throw new Exception("Could not retrieve from table "+tableName, e);
 			}
 		}
@@ -329,7 +328,7 @@ namespace CharSheetV2.DataLayer
 					db.Close();
 				}
 				return retrievedTable;
-			}catch(Exception e){
+			} catch(Exception e){
 				throw new Exception("Cannot get table "+tableName, e);
 			}
 		}
@@ -365,7 +364,7 @@ namespace CharSheetV2.DataLayer
 					// Prepare the INSERT query with the table name and keys
 					String insertQuery = String.Format("INSERT INTO [{0}]({1}) VALUES(", tableName, String.Join(",", keys));
 					
-					// Prepair the placeholders for the parameterized query
+					// Prepare the placeholders for the parameterized query
 					String[] valuePlaceholders = new String[values.Length];
 					for(int i=0; i< values.Length; i++){
 						valuePlaceholders[i] = "@"+i;
@@ -390,7 +389,7 @@ namespace CharSheetV2.DataLayer
 					db.Close();
 					return id;
 				}
-			}catch(Exception e){
+			} catch(Exception e){
 				e.ToString();
 				//Something broke...fail. D:
 				return -1;
@@ -479,7 +478,7 @@ namespace CharSheetV2.DataLayer
 					db.Close();
 				}
 				return false;
-			}catch(Exception e){
+			} catch(Exception e){
 				e.ToString();
 				return false;
 			}
@@ -491,7 +490,7 @@ namespace CharSheetV2.DataLayer
 		/// for updating via a Dictionary collection.
 		/// </summary>
 		/// <param name="tableName">Name of the table to update</param>
-		/// <param name="record">Dictionary collection of key/value pairs</param>
+		/// <param name="recordInfo">Dictionary collection of key/value pairs</param>
 		/// <param name="primaryKey">Key to select records by</param>
 		/// <param name="search">Value to search records by</param>
 		/// <returns>Boolean success/failure</returns>
@@ -517,7 +516,7 @@ namespace CharSheetV2.DataLayer
 		/// </summary>
 		/// <param name="tableName">Name of the table to update</param>
 		/// <param name="key">The field name fo the blob</param>
-		/// <param name="value">The byte array value of the blob</param>
+		/// <param name="binaryValue">The byte array value of the blob</param>
 		/// <param name="primaryKey">Key to select records by</param>
 		/// <param name="search">Value to select records by</param>
 		/// <returns>Boolean success/failure</returns>
@@ -550,7 +549,7 @@ namespace CharSheetV2.DataLayer
 					db.Close();
 				}
 				return false;
-			}catch(Exception e){
+			} catch(Exception e){
 				e.ToString();
 				return false;
 			}
@@ -570,8 +569,7 @@ namespace CharSheetV2.DataLayer
 			// If the parameters are empty, fail
 			if(tableName == String.Empty || key == String.Empty || search == String.Empty){
 				return false;
-			}
-			
+			}			
 			try{
 				using(SQLiteConnection db = new SQLiteConnection(this.dbConnectionString)){
 					db.Open();
@@ -594,7 +592,42 @@ namespace CharSheetV2.DataLayer
 					db.Close();
 					return false;
 				}
-			}catch(Exception e){
+			} catch(Exception e){
+				e.ToString();
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Empties all records from table identified by tableName. <WARNING>This will nuke all records in the table so BE CAREFUL!</WARNING>
+		/// </summary>
+		/// <param name="tableName">Name of the table to truncate</param>
+		/// <returns>Boolean sucess/failure</returns>
+		public Boolean TruncateTable(String tableName){
+			if (tableName == String.Empty){
+				return false;
+			}
+			try{
+				using(SQLiteConnection db = new SQLiteConnection(this.dbConnectionString)){
+			      	db.Open();
+			      	//Set up the command.
+					String query = "DELETE FROM [{0}]";
+					query = String.Format(query, tableName);
+					using(SQLiteCommand cmd = new SQLiteCommand()){
+						cmd.Connection = db;
+						cmd.CommandType = CommandType.Text;
+						cmd.CommandText = query;
+						//If the query effects more than one row, it's successful.
+						if(cmd.ExecuteNonQuery() > 0) {
+							db.Close();
+							return true;
+						}
+					}
+					//Fail
+					db.Close();
+					return false;
+ 		        }
+			} catch(Exception e){
 				e.ToString();
 				return false;
 			}
@@ -802,9 +835,7 @@ namespace CharSheetV2.DataLayer
 							//Get the rows back from the database.
 							while(reader.Read()){
 								//If the database is good, we get a single row of 'ok'
-								if(reader.GetValue(0).ToString() == "ok"){
-									isGood = true;
-								}
+                                isGood |= reader.GetValue(0).ToString() == "ok";
 								//Otherwise, we get a litany of errors from the database
 							}
 						}
@@ -812,7 +843,7 @@ namespace CharSheetV2.DataLayer
 					db.Close();
 				}
 				return isGood;
-			}catch(Exception e){
+			} catch(Exception e){
 				e.ToString();
 				return false;
 			}
@@ -824,7 +855,7 @@ namespace CharSheetV2.DataLayer
 		/// <returns>int Id or -1 on failure</returns>
 		public int GetLastInsertId(SQLiteConnection db ){
 			try{
-				String query = "SELECT last_insert_rowid()";
+                const String query = "SELECT last_insert_rowid()";
 				using(SQLiteCommand cmd = new SQLiteCommand(query, db)){
 					SQLiteDataReader reader = cmd.ExecuteReader();
 					if(reader.HasRows){
@@ -834,8 +865,43 @@ namespace CharSheetV2.DataLayer
 					}
 					return -1;
 				}
-			}catch(Exception e){
+			} catch(Exception e){
 				throw(new Exception("Failed to get last insert id!", e));
+			}
+		}
+		
+		/// <summary>
+		/// Counts the number of records in the given table.
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		public int GetRecordCount(String tableName, String key){
+			// If the parameters are empty, fail
+			int numberOfRows = -1;
+			if(tableName == String.Empty || key == String.Empty){
+				return numberOfRows;
+			}
+			try{
+				//Setup the command
+				using(SQLiteConnection db = new SQLiteConnection(this.dbConnectionString)){
+					db.Open();
+					String query = "SELECT count({0}) FROM [{1}]";
+					query = String.Format(query, key, tableName);
+					using(SQLiteCommand cmd = new SQLiteCommand(query, db)){
+						SQLiteDataReader reader = cmd.ExecuteReader();
+						if(reader.HasRows){
+							if(reader.Read()){
+								numberOfRows = Convert.ToInt32(reader.GetValue(0).ToString());
+							}
+						}
+					}
+					db.Close();
+					return numberOfRows;
+				}
+			} catch(Exception e){
+				e.ToString();
+				return -1;
 			}
 		}
 		
@@ -920,20 +986,20 @@ namespace CharSheetV2.DataLayer
 		private void PopulateSystemTables() {
 			//All of the SQL queries are 'CREATE IF NOT EXISTS', so it does 
 			//not hurt the database to run them even if the tables are there.
-			String createCharacters = "CREATE TABLE IF NOT EXISTS characters " +
-									  "(cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT NULL, " +
-									  "callsign TEXT NULL, species TEXT NULL, gender TEXT NULL, height TEXT NULL, " +
-									  "weight TEXT NULL, age INTEGER NOT NULL DEFAULT 18, affiliation TEXT NULL, " +
-									  "rank TEXT NULL, karma INTEGER NOT NULL DEFAULT 0, experience INTEGER NOT NULL DEFAULT 0, " +
-									  "background TEXT NULL, advantages TEXT NULL, inventory TEXT NULL, notes TEXT NULL, picture BLOB NULL, " +
-									  "isnpc NUMERIC NOT NULL DEFAULT 0);";
-			String createAttributes = "CREATE TABLE IF NOT EXISTS attributes " + 
-									  "(aid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cid INTEGER NULL, attribute TEXT NULL, points INTEGER NULL NOT NULL DEFAULT 0, " +
-									  "modifier INTEGER NOT NULL DEFAULT 0,exempt NUMERIC NOT NULL DEFAULT 0);";
-			String createSkills = "CREATE TABLE IF NOT EXISTS skills (sid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cid INTEGER NULL, skill TEXT NULL, " + 
-								  "points INTEGER NULL NOT NULL DEFAULT 0, modifier INTEGER NOT NULL DEFAULT 0, " +
-				                  "exempt NUMERIC NOT NULL DEFAULT 0);";
-			String createConfig = "CREATE TABLE IF NOT EXISTS config (cid INTEGER PRIMARY KEY, configKey TEXT NOT NULL, configValue TEXT NOT NULL)"; 
+            const String createCharacters = "CREATE TABLE IF NOT EXISTS characters " 
+                                          + "(cid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT NULL, " 
+                                          + "callsign TEXT NULL, species TEXT NULL, gender TEXT NULL, height TEXT NULL, " 
+                                          + "weight TEXT NULL, age INTEGER NOT NULL DEFAULT 18, affiliation TEXT NULL, " 
+                                          + "rank TEXT NULL, karma INTEGER NOT NULL DEFAULT 0, experience INTEGER NOT NULL DEFAULT 0, " 
+                                          + "background TEXT NULL, advantages TEXT NULL, inventory TEXT NULL, notes TEXT NULL, picture BLOB NULL, " 
+                                          + "isnpc NUMERIC NOT NULL DEFAULT 0);";
+            const String createAttributes = "CREATE TABLE IF NOT EXISTS attributes " 
+                                          + "(aid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cid INTEGER NULL, attribute TEXT NULL, points INTEGER NULL NOT NULL DEFAULT 0, " 
+                                          + "modifier INTEGER NOT NULL DEFAULT 0,exempt NUMERIC NOT NULL DEFAULT 0);";
+            const String createSkills = "CREATE TABLE IF NOT EXISTS skills (sid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cid INTEGER NULL, skill TEXT NULL, " 
+                                      + "points INTEGER NULL NOT NULL DEFAULT 0, modifier INTEGER NOT NULL DEFAULT 0, " 
+                                      + "exempt NUMERIC NOT NULL DEFAULT 0);";
+            const String createConfig = "CREATE TABLE IF NOT EXISTS config (coid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, configKey TEXT NOT NULL, configValue TEXT NOT NULL)"; 
 			using(SQLiteConnection db = new SQLiteConnection(this.dbConnectionString)){
 				db.Open();
 				using(SQLiteCommand cmd = new SQLiteCommand(createCharacters, db)){

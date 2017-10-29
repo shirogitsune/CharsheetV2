@@ -24,13 +24,13 @@ namespace CharSheetV2
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			this.fatesHandMinutes.Value = Math.floor((millis / 1000) / 60);
+			this.fatesHandMinutes.Value = (millis / 1000) / 60;
 			this.fatesHandTimerMillis = millis;
 		}
 		
 		public void Button1Click(object sender, EventArgs e)
 		{
-			this.fatesHandTimerMillis = (this.fatesHandMinutes * 60 ) * 1000;
+			this.fatesHandTimerMillis = (int)((this.fatesHandMinutes.Value * 60 ) * 1000);
 			this.Close();
 		}
 		

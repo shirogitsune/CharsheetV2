@@ -153,9 +153,7 @@ namespace CharSheetV2.Models
 			if(this.characterId == -1)
 			{	//New character, so insert the record.
 				this.characterId = this.database.InsertRecord("characters", characterData);
-				if ( this.characterId > -1 ) {
-					success = true; 
-				}
+                success |= this.characterId > -1;
 			}else
 			{	//Existing character, update the record.
 				success = this.database.UpdateRecord("characters", characterData, "cid", "" + this.characterId);
@@ -229,7 +227,7 @@ namespace CharSheetV2.Models
 		/// <summary>
 		/// Accepts a byte array to store in the database.
 		/// </summary>
-		/// <param name="fileName">The string path to the desired file.</param>
+		/// <param name="imgData">The string path to the desired file.</param>
 		public void SetCharacterImageFromBytes(byte[] imgData) {
 			this.database.UpdateRecordBlob("characters", "picture", imgData, "cid", this.characterId.ToString());
 		}
@@ -254,11 +252,7 @@ namespace CharSheetV2.Models
 		/// <returns>Byte array representing the image data from the database or null (if empty)</returns>
 		public byte[] GetCharacterImageBytes() {
 			byte[] imgData = this.database.SelectBlobFieldByKey("characters", "picture", "cid", this.characterId.ToString());
-			if (imgData.Length > 0) {
-				return imgData;
-			} else {
-				return null;
-			}
+            return imgData.Length > 0 ? imgData : null;
 		}
 		
 		/// <summary>

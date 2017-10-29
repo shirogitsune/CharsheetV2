@@ -44,7 +44,6 @@ namespace CharSheetV2
 			this.skillCheck = false;
 			this.changesMade = false;
 			this.deletingCharacters = false;
-			this.loadConfig();
 			this.InitCharacterList();
 		}
 		
@@ -54,7 +53,7 @@ namespace CharSheetV2
 		/// </summary>
 		private void DoApplicationClose() {
 			this.notificationLabel.Text = "Shutting down...";
-			if(this.changesMade){
+			if(this.changesMade || this.config.IsConfigChanged()){
 				//If changes are flagged, ask the user for direction.
 				DialogResult saveChanges = MessageBox.Show("There were changes made that have not been saved.\nSave changes now?", 
 				                                           "Apply Changes", 
@@ -70,6 +69,9 @@ namespace CharSheetV2
 							this.notificationLabel.Text = "Saving " + savable.Current.characterName + "...";
 						    savable.Current.Save();
 						}
+					}
+					if (this.config.IsConfigChanged()) {
+						this.config.SaveConfiguration();
 					}
 					//Stop all operations and close.
 					this.changesMade = false;
@@ -122,6 +124,8 @@ namespace CharSheetV2
 					//No characters. Make some!
 					this.notificationLabel.Text = "No characters found. Make some characters!";
 				}
+				//Load the application configuration.
+				this.LoadConfig();
 			}else{
 				// "I sense a great distubance in the Database...as if thousands of records cried out in 
 				// terror and were suddenly silenced. I fear soemthing terrible has happened." ~ Odbc Kenobi
@@ -135,12 +139,13 @@ namespace CharSheetV2
 		/// This method populates the configuration of the application from the table stored in the data files. If non exists, it 
 		/// populates some defaults.
 		/// </summary>
-		private void loadConfig() {
-			//TODO: Load Config
-			this.config = new ConfigurationModel();
+		private void LoadConfig() {
+			this.config = new ConfigurationModel(this.database);
+			this.config.LoadConfiguration();
 			this.diceSides = this.config.GetDiceSides();
 			this.fatesHand.Interval = this.config.GetFatesHandTimer();
-			this.configureFatesHandToolStripMenuItem.Checked = this.config.GetFatesHand();
+			this.fateTimerToolStripMenuItem.Checked = this.config.GetFatesHand();
+			this.FatesHandCheckedStateChanged(this, null);
 		}
 		
 		/// <summary>
@@ -289,6 +294,9 @@ namespace CharSheetV2
 			}else{
 				this.fatesHand.Stop();
 			}
+			if ((this.config != null) && this.config.GetFatesHand() != this.fateTimerToolStripMenuItem.Checked) {
+				this.config.SetFatesHand(this.fateTimerToolStripMenuItem.Checked);
+			}
 		}
 		
 		/// <summary>
@@ -301,10 +309,15 @@ namespace CharSheetV2
 		{
 			FatesHandDialog fhDialog = new FatesHandDialog(this.fatesHand.Enabled, this.fatesHand.Interval);
 			fhDialog.ShowDialog();
-			this.fatesHand.Interval = fhDialog.fatesHandTimerMillis;
-			if(this.fateTimerToolStripMenuItem.Checked){
-				this.fatesHand.Stop();
-				this.fatesHand.Start();
+			if (fhDialog.DialogResult != DialogResult.Cancel && this.fatesHand.Interval != fhDialog.fatesHandTimerMillis){
+				this.fatesHand.Interval = fhDialog.fatesHandTimerMillis;
+				if ((this.config != null)) {
+					this.config.SetFatesHandTimer(this.fatesHand.Interval);
+				}
+				if(this.fateTimerToolStripMenuItem.Checked){
+					this.fatesHand.Stop();
+					this.fatesHand.Start();
+				}
 			}
 		}
 		
@@ -318,8 +331,13 @@ namespace CharSheetV2
 		{
 			DiceSidesDialog dsDialog = new DiceSidesDialog(this.diceSides);
 			dsDialog.ShowDialog();
-			this.diceSides = dsDialog.numberOfDiceSides;
-			this.d20Button.Text = "D"+this.diceSides.ToString();
+			if (dsDialog.DialogResult != DialogResult.Cancel && this.diceSides != dsDialog.numberOfDiceSides){
+				this.diceSides = dsDialog.numberOfDiceSides;
+				if ((this.config != null)) {
+					this.config.SetDiceSides(this.diceSides);
+				}
+				this.d20Button.Text = "D"+this.diceSides.ToString();
+			}
 		}
 		
 		/// <summary>
@@ -373,8 +391,7 @@ namespace CharSheetV2
 		public void D20ButtonClick(object sender, EventArgs e)
 		{
 			//Get the die value  (1D20)
-			int diceCount = Int32.Parse(this.diceCount.Value.ToString());
-			int dieValue = this.RollDie(this.diceSides, diceCount);
+			int dieValue = this.RollDie(this.diceSides, Int32.Parse(this.diceCount.Value.ToString()));
 			
 			//If there mod value is set, add it. Otherwise, don't.
 			int modValue = 0;
@@ -391,6 +408,7 @@ namespace CharSheetV2
 		/// Performs a dice roll for a die of 'n' number of sides.
 		/// </summary>
 		/// <param name="sides">The number of sides to the 'die'</param>
+		/// <param name="count">The number of dice to roll</param>
 		/// <returns>The result of the dice 'roll'</returns>
 		public int RollDie(int sides, int count){
 			//Initialize a psudo-random and pick a number between 1 and n.
@@ -442,7 +460,7 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments.</param>
 		public void SaveChangesToDatabase(object sender, EventArgs e)
 		{
-			if (this.changesMade) {
+			if (this.changesMade || this.config.IsConfigChanged()) {
 				//Enumerate over the characters in the list
 				IEnumerator<CharacterSheetModel> savable = castOfCharacters.GetEnumerator();
 				while (savable.MoveNext()) {
@@ -451,6 +469,9 @@ namespace CharSheetV2
 						this.notificationLabel.Text = "Saving " + savable.Current.characterName + "...";
 					    savable.Current.Save();
 					}
+				}
+				if (this.config.IsConfigChanged()){
+					this.config.SaveConfiguration();
 				}
 				//Clean up database.
 				this.database.VacuumDatabase();
@@ -609,10 +630,7 @@ namespace CharSheetV2
 				};
 				
 				//Setup the delegat/handler to update our 'progress' indicator.
-				parser.ProgressChanged += delegate(object progressSender, ProgressChangedEventArgs ex) {
-					this.notificationLabel.Text = "Exporting Records.\nPlease Wait...[" 
-												+ (ex.ProgressPercentage / exporting)*100 + "%]";
-				};
+                parser.ProgressChanged += (object progressSender, ProgressChangedEventArgs ex) => this.notificationLabel.Text = "Exporting Records.\nPlease Wait...[" + (ex.ProgressPercentage / exporting) * 100 + "%]";
 				
 				//Setup delegate/handler to process the completion message.
 				parser.RunWorkerCompleted += delegate(object completeSender, RunWorkerCompletedEventArgs ext) {
@@ -671,15 +689,9 @@ namespace CharSheetV2
 				parser.WorkerReportsProgress = true;
 				
 				//Setup the delegat/handler to update our 'progress' indicator.
-				parser.ProgressChanged += delegate(object progressSender, ProgressChangedEventArgs ex) {
-					this.notificationLabel.Text = "Parsing data file.\nPlease Wait...[" 
-												 + processAnim[ex.ProgressPercentage % processAnim.GetLength(0)] 
-												 + "]\n\nThis may take a while...";
-				};
+                parser.ProgressChanged += (object progressSender, ProgressChangedEventArgs ex) => this.notificationLabel.Text = "Parsing data file.\nPlease Wait...[" + processAnim[ex.ProgressPercentage % processAnim.GetLength(0)] + "]\n\nThis may take a while...";
 				//Setup the delegate/handler to actually do the work.
-				parser.DoWork += delegate(object workSender, DoWorkEventArgs ex) {
-					success = this.database.ParseCharSheetData(File.ReadAllText(@importDialog.FileName));
-				};
+                parser.DoWork += (object workSender, DoWorkEventArgs ex) => success = this.database.ParseCharSheetData(File.ReadAllText(@importDialog.FileName));
 				//Setup the handler/delecate to handle the results of the operation.
 				parser.RunWorkerCompleted += delegate(object completeSender, RunWorkerCompletedEventArgs ext) {
 					if(success) {
@@ -762,10 +774,7 @@ namespace CharSheetV2
 				};
 				
 				//Setup the delegat/handler to update our 'progress' indicator.
-				parser.ProgressChanged += delegate(object progressSender, ProgressChangedEventArgs ex) {
-					this.notificationLabel.Text = "Importing Records.\nPlease Wait...[" 
-												  + processAnim[ex.ProgressPercentage % processAnim.GetLength(0)] + "]";
-				};
+                parser.ProgressChanged += (object progressSender, ProgressChangedEventArgs ex) => this.notificationLabel.Text = "Importing Records.\nPlease Wait...[" + processAnim[ex.ProgressPercentage % processAnim.GetLength(0)] + "]";
 				
 				//Setup delegate/handler to process the completion message.
 				parser.RunWorkerCompleted += delegate(object completeSender, RunWorkerCompletedEventArgs ext) {
