@@ -1,7 +1,5 @@
-﻿/// <summary>
-/// Primary application entry point
-/// Author: Justin Pearce <whitefox@guardianfox.net>
-/// </summary>
+﻿// Primary application entry point
+// Author: Justin Pearce <whitefox@guardianfox.net>
 
 using System;
 using System.Windows.Forms;

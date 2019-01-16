@@ -1,7 +1,5 @@
-﻿/// <summary>
-/// The main UI form for the application. this has much of the UI logic. Also holds the dice rolling logic for now.
-/// Author: Justin Pearce <whitefox@guardianfox.net>
-/// </summary>
+﻿// The main UI form for the application. this has much of the UI logic. Also holds the dice rolling logic for now.
+// Author: Justin Pearce <whitefox@guardianfox.net>
 
 using System;
 using System.IO;
@@ -21,10 +19,10 @@ namespace CharSheetV2
 	public partial class MainForm : Form
 	{
 		private int diceSides = 20;
-		private Boolean skillCheck;
-		private Boolean switchingChars;
-		private Boolean changesMade;
-		private Boolean deletingCharacters; 
+		private bool skillCheck;
+		private bool switchingChars;
+		private bool changesMade;
+		private bool deletingCharacters; 
 		private CharacterDataInterface database;
 		private CharacterSheetModel currentCharacter;
 		private ConfigurationModel config;
@@ -52,8 +50,8 @@ namespace CharSheetV2
 		/// were made prior to quitting or closing the program.
 		/// </summary>
 		private void DoApplicationClose() {
-			this.notificationLabel.Text = "Shutting down...";
-			if(this.changesMade || this.config.IsConfigChanged()){
+			notificationLabel.Text = "Shutting down...";
+			if(changesMade || config.IsConfigChanged()){
 				//If changes are flagged, ask the user for direction.
 				DialogResult saveChanges = MessageBox.Show("There were changes made that have not been saved.\nSave changes now?", 
 				                                           "Apply Changes", 
@@ -66,31 +64,31 @@ namespace CharSheetV2
 					while (savable.MoveNext()) {
 						//If the character is 'volatile', then we need to save it's state.
 						if (savable.Current.GetVolatility()) {
-							this.notificationLabel.Text = "Saving " + savable.Current.characterName + "...";
+							notificationLabel.Text = "Saving " + savable.Current.characterName + "...";
 						    savable.Current.Save();
 						}
 					}
-					if (this.config.IsConfigChanged()) {
-						this.config.SaveConfiguration();
+					if (config.IsConfigChanged()) {
+						config.SaveConfiguration();
 					}
 					//Stop all operations and close.
-					this.changesMade = false;
-					this.database.VacuumDatabase();
-					this.fatesHand.Stop();
-					this.fatesHand.Dispose();
+					changesMade = false;
+					database.VacuumDatabase();
+					fatesHand.Stop();
+					fatesHand.Dispose();
 					Application.Exit();
 				}else if(saveChanges == DialogResult.No){
 					//Don't save the data and exit!
-					this.changesMade = false;
-					this.fatesHand.Stop();
-					this.fatesHand.Dispose();
+					changesMade = false;
+					fatesHand.Stop();
+					fatesHand.Dispose();
 					Application.Exit();
 				}
 			}else{
 				//Nothing to save, kill the timer and exit.
-				this.changesMade = false;
-				this.fatesHand.Stop();
-				this.fatesHand.Dispose();
+				changesMade = false;
+				fatesHand.Stop();
+				fatesHand.Dispose();
 				Application.Exit();
 			}
 		}
@@ -102,36 +100,36 @@ namespace CharSheetV2
 		/// </summary>
 		public void InitCharacterList() {
 			//Create a list for the characters to 'live'
-			this.castOfCharacters = new List<CharacterSheetModel>();
+			castOfCharacters = new List<CharacterSheetModel>();
 			//Open the database and perform an integrity check
-			this.database = new CharacterDataInterface();
-			if(this.database.IntegrityCheck()){
+			database = new CharacterDataInterface();
+			if(database.IntegrityCheck()){
 				//Get all the characters
-				DataTable initialCharacterList = this.database.GetTable("characters");
+				DataTable initialCharacterList = database.GetTable("characters");
 				if(initialCharacterList != null && initialCharacterList.Rows.Count > 0){
 					//If we have characters...
-					this.charList.Items.Clear();
+					charList.Items.Clear();
 					foreach(DataRow row in initialCharacterList.Rows){
 						//Load the character object from the database.
-						CharacterSheetModel thisCharacter = new CharacterSheetModel();
+						var thisCharacter = new CharacterSheetModel();
 						thisCharacter.LoadCharacterById(int.Parse(row.ItemArray.GetValue(0).ToString()));
 						//Add the character to the related lists.
 						castOfCharacters.Add(thisCharacter);
-						this.charList.Items.Add(thisCharacter.characterName);
+						charList.Items.Add(thisCharacter.characterName);
 					}
-					this.notificationLabel.Text = initialCharacterList.Rows.Count + " characters loaded.";
+					notificationLabel.Text = initialCharacterList.Rows.Count + " characters loaded.";
 				} else {
 					//No characters. Make some!
-					this.notificationLabel.Text = "No characters found. Make some characters!";
+					notificationLabel.Text = "No characters found. Make some characters!";
 				}
 				//Load the application configuration.
-				this.LoadConfig();
+				LoadConfig();
 			}else{
 				// "I sense a great distubance in the Database...as if thousands of records cried out in 
 				// terror and were suddenly silenced. I fear soemthing terrible has happened." ~ Odbc Kenobi
 				MessageBox.Show("The database failed it's integrity check! Please use another program to recover the data from the database file. "
 				               +"(Hint: Search for 'how to repair a sqlite database')", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				this.notificationLabel.Text = "Error!";
+				notificationLabel.Text = "Error!";
 			}
 		}
 
@@ -140,12 +138,12 @@ namespace CharSheetV2
 		/// populates some defaults.
 		/// </summary>
 		private void LoadConfig() {
-			this.config = new ConfigurationModel(this.database);
-			this.config.LoadConfiguration();
-			this.diceSides = this.config.GetDiceSides();
-			this.fatesHand.Interval = this.config.GetFatesHandTimer();
-			this.fateTimerToolStripMenuItem.Checked = this.config.GetFatesHand();
-			this.FatesHandCheckedStateChanged(this, null);
+			config = new ConfigurationModel(database);
+			config.LoadConfiguration();
+			diceSides = config.GetDiceSides();
+			fatesHand.Interval = config.GetFatesHandTimer();
+			fateTimerToolStripMenuItem.Checked = config.GetFatesHand();
+			FatesHandCheckedStateChanged(this, null);
 		}
 		
 		/// <summary>
@@ -157,129 +155,113 @@ namespace CharSheetV2
 		/// <param name="e">The arguments for the event.</param>
 		public void CharListSelectedIndexChanged(object sender, EventArgs e){
 			//If the number of checked items is more than one, don't update the UI.
-			if (this.charList.CheckedItems.Count > 1) {
-				this.switchingChars = true;				
+			if (charList.CheckedItems.Count > 1) {
+				switchingChars = true;				
 			} else {
-				if (this.skillCheck) {
-					this.notificationLabel.Text = "Skill Roll Canceled...";
+				if (skillCheck) {
+					notificationLabel.Text = "Skill Roll Canceled...";
 				}
-				this.skillCheck = false;
+				skillCheck = false;
 			}
 			//Don't default select a cell in the skill/attribute tables.
-			this.skillDataGridView.CurrentCell = null;
-			this.attributesDataGridView.CurrentCell = null;
+			skillDataGridView.CurrentCell = null;
+			attributesDataGridView.CurrentCell = null;
 			//Make sure we are not deleting and also within the rang of the elements in he list.
-			if (!deletingCharacters && (this.charList.SelectedIndex < this.charList.Items.Count && this.charList.SelectedIndex >= 0)) {
+			if (!deletingCharacters && (charList.SelectedIndex < charList.Items.Count && charList.SelectedIndex >= 0)) {
 				//Set the current character object.
-				this.currentCharacter = this.castOfCharacters.ToArray()[this.charList.SelectedIndex];
+				currentCharacter = castOfCharacters.ToArray()[charList.SelectedIndex];
 				//Set alot of fields.
-				this.charName.Text = this.currentCharacter.characterName;
-				this.charCallsign.Text = this.currentCharacter.characterCallsign;
-				this.charSpecies.Text = this.currentCharacter.characterSpecies;
+				charName.Text = currentCharacter.characterName;
+				charCallsign.Text = currentCharacter.characterCallsign;
+				charSpecies.Text = currentCharacter.characterSpecies;
 				
 				//Set the gender field.
-				if(this.charGender.FindString(this.currentCharacter.characterGender) != -1) {
-					this.charGender.SelectedIndex = this.charGender.FindString(this.currentCharacter.characterGender);
-				} else {
-					this.charGender.SelectedIndex = this.charGender.FindString("Other");
-				}
+                charGender.SelectedIndex = charGender.FindString(currentCharacter.characterGender) != -1 ? charGender.FindString(currentCharacter.characterGender) : charGender.FindString("Other");
 				
-				this.charAffiliation.Text = this.currentCharacter.characterAffiliation;
+				charAffiliation.Text = currentCharacter.characterAffiliation;
 				
 				//Ensure the age field is a non-0 value.
 				try {
-					this.charAge.Value = this.currentCharacter.characterAge;
+					charAge.Value = currentCharacter.characterAge;
 				} catch (ArgumentOutOfRangeException ea) {
 					ea.ToString();
-					if(this.currentCharacter.characterAge > 0) {
-						this.charAge.Value = this.charAge.Maximum;
-					} else {
-						this.charAge.Value = this.charAge.Minimum;
-					}
+                    charAge.Value = currentCharacter.characterAge > 0 ? charAge.Maximum : charAge.Minimum;
 				}
 				
-				this.charHeight.Text = this.currentCharacter.characterHeight;
-				this.charWeight.Text = this.currentCharacter.characterWeight;
-				this.charRank.Text = this.currentCharacter.characterRank;
+				charHeight.Text = currentCharacter.characterHeight;
+				charWeight.Text = currentCharacter.characterWeight;
+				charRank.Text = currentCharacter.characterRank;
 				
 				//Ensure the karma field is within the range for the field.
 				try { 
-					this.karmaPoints.Value = this.currentCharacter.characterKarma;
+					karmaPoints.Value = currentCharacter.characterKarma;
 				} catch (ArgumentOutOfRangeException ek) {
 					ek.ToString();
-					if(this.currentCharacter.characterKarma > 0) {
-						this.karmaPoints.Value = this.karmaPoints.Maximum;
-					} else {
-						this.karmaPoints.Value = this.karmaPoints.Minimum;
-					}
+                    karmaPoints.Value = currentCharacter.characterKarma > 0 ? karmaPoints.Maximum : karmaPoints.Minimum;
 				}
 				
 				//Ensure that the experience points value is within the acceptable range.
 				try {
-					this.experiencePoints.Value = Math.Abs(this.currentCharacter.characterExperience);
+					experiencePoints.Value = Math.Abs(currentCharacter.characterExperience);
 				} catch (ArgumentOutOfRangeException ee) {
 					ee.ToString();
-					if(this.currentCharacter.characterExperience > 0) {
-						this.experiencePoints.Value = this.experiencePoints.Maximum;
+					if(currentCharacter.characterExperience > 0) {
+						experiencePoints.Value = experiencePoints.Maximum;
 					}
 				}
 				
-				this.charBackground.Text = this.currentCharacter.characterBackground;
-				this.charAdvantagesDisadvantages.Text = this.currentCharacter.characterAdvantages;
-				this.charNotes.Text = this.currentCharacter.characterNotes;
-				this.charInventory.Text = this.currentCharacter.characterInventory;
+				charBackground.Text = currentCharacter.characterBackground;
+				charAdvantagesDisadvantages.Text = currentCharacter.characterAdvantages;
+				charNotes.Text = currentCharacter.characterNotes;
+				charInventory.Text = currentCharacter.characterInventory;
 				
 				//..and a checkbox.
-				if (this.currentCharacter.isNPC == 1) {
-					this.charNPC.Checked = true;				
-				} else {
-					this.charNPC.Checked = false;
-				}
+                charNPC.Checked = currentCharacter.isNPC == 1 ? true : false;
 				
 				//Wire up the Attributes data table to the grid view
-				this.attributesDataGridView.DataSource = this.currentCharacter.characterAttributes;
-				this.attributesDataGridView.CurrentCell = null;
-				if (this.attributesDataGridView.Columns.Count > 0) {
-					this.attributesDataGridView.AutoResizeColumn(3);
-					this.attributesDataGridView.AutoResizeColumn(4);
-					this.attributesDataGridView.AutoResizeColumn(5);
+				attributesDataGridView.DataSource = currentCharacter.characterAttributes;
+				attributesDataGridView.CurrentCell = null;
+				if (attributesDataGridView.Columns.Count > 0) {
+					attributesDataGridView.AutoResizeColumn(3);
+					attributesDataGridView.AutoResizeColumn(4);
+					attributesDataGridView.AutoResizeColumn(5);
 					
 					//Hide the aid and cid columns
-					this.attributesDataGridView.Columns[0].Visible = false;
-					this.attributesDataGridView.Columns[1].Visible = false;
+					attributesDataGridView.Columns[0].Visible = false;
+					attributesDataGridView.Columns[1].Visible = false;
 				}
 							
 				//Set total attribute points label
 				int attrSum = 0;
-				for (int x = 0; x < this.attributesDataGridView.Rows.Count; x++) {
-					attrSum += Convert.ToInt32(this.attributesDataGridView.Rows[x].Cells[3].Value);
+				for (int x = 0; x < attributesDataGridView.Rows.Count; x++) {
+					attrSum += Convert.ToInt32(attributesDataGridView.Rows[x].Cells[3].Value);
 				}
-				this.attrPoints.Text = this.attrPoints.Text.Substring(0, this.attrPoints.Text.LastIndexOf(':') + 1) + attrSum;
+				attrPoints.Text = attrPoints.Text.Substring(0, attrPoints.Text.LastIndexOf(':') + 1) + attrSum;
 	
 				//Wire up the Skills data tabe to the grid view.
-				this.skillDataGridView.DataSource = this.currentCharacter.characterSkills;
-				this.skillDataGridView.CurrentCell = null;
-				if (this.skillDataGridView.Columns.Count > 0) {
-					this.skillDataGridView.AutoResizeColumn(3);
-					this.skillDataGridView.AutoResizeColumn(4);
-					this.skillDataGridView.AutoResizeColumn(5);
+				skillDataGridView.DataSource = currentCharacter.characterSkills;
+				skillDataGridView.CurrentCell = null;
+				if (skillDataGridView.Columns.Count > 0) {
+					skillDataGridView.AutoResizeColumn(3);
+					skillDataGridView.AutoResizeColumn(4);
+					skillDataGridView.AutoResizeColumn(5);
 				
 					//Hide the sid and cid columns
-					this.skillDataGridView.Columns[0].Visible = false;
-					this.skillDataGridView.Columns[1].Visible = false;
+					skillDataGridView.Columns[0].Visible = false;
+					skillDataGridView.Columns[1].Visible = false;
 				}
 				
 				//Set total skill points label;
 				int skillSum = 0;
-				for (int x = 0; x < this.skillDataGridView.Rows.Count; x++) {
-					skillSum += Convert.ToInt32(this.skillDataGridView.Rows[x].Cells[3].Value);
+				for (int x = 0; x < skillDataGridView.Rows.Count; x++) {
+					skillSum += Convert.ToInt32(skillDataGridView.Rows[x].Cells[3].Value);
 				}
-				this.skillPoints.Text = this.skillPoints.Text.Substring(0, this.skillPoints.Text.LastIndexOf(':') + 1) + skillSum;
+				skillPoints.Text = skillPoints.Text.Substring(0, skillPoints.Text.LastIndexOf(':') + 1) + skillSum;
 				
-				this.charPictureBox.Image = this.currentCharacter.GetCharacterImage();
+				charPictureBox.Image = currentCharacter.GetCharacterImage();
 			}
 			//No longer switshing characters.
-			this.switchingChars = false;
+			switchingChars = false;
 			
 		}
 		
@@ -289,13 +271,13 @@ namespace CharSheetV2
 		/// <param name="sender">The sender</param>
 		/// <param name="e">The event arguments.</param>
 		public void FatesHandCheckedStateChanged(object sender, EventArgs e){
-			if(this.fateTimerToolStripMenuItem.Checked){
-				this.fatesHand.Start();
+			if(fateTimerToolStripMenuItem.Checked){
+				fatesHand.Start();
 			}else{
-				this.fatesHand.Stop();
+				fatesHand.Stop();
 			}
-			if ((this.config != null) && this.config.GetFatesHand() != this.fateTimerToolStripMenuItem.Checked) {
-				this.config.SetFatesHand(this.fateTimerToolStripMenuItem.Checked);
+			if ((config != null) && config.GetFatesHand() != fateTimerToolStripMenuItem.Checked) {
+				config.SetFatesHand(fateTimerToolStripMenuItem.Checked);
 			}
 		}
 		
@@ -307,16 +289,16 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void ConfigureFatesHandToolStripMenuItemClick(object sender, System.EventArgs e)
 		{
-			FatesHandDialog fhDialog = new FatesHandDialog(this.fatesHand.Enabled, this.fatesHand.Interval);
+			var fhDialog = new FatesHandDialog(fatesHand.Enabled, fatesHand.Interval);
 			fhDialog.ShowDialog();
-			if (fhDialog.DialogResult != DialogResult.Cancel && this.fatesHand.Interval != fhDialog.fatesHandTimerMillis){
-				this.fatesHand.Interval = fhDialog.fatesHandTimerMillis;
-				if ((this.config != null)) {
-					this.config.SetFatesHandTimer(this.fatesHand.Interval);
+			if (fhDialog.DialogResult != DialogResult.Cancel && fatesHand.Interval != fhDialog.fatesHandTimerMillis){
+				fatesHand.Interval = fhDialog.fatesHandTimerMillis;
+				if ((config != null)) {
+					config.SetFatesHandTimer(fatesHand.Interval);
 				}
-				if(this.fateTimerToolStripMenuItem.Checked){
-					this.fatesHand.Stop();
-					this.fatesHand.Start();
+				if(fateTimerToolStripMenuItem.Checked){
+					fatesHand.Stop();
+					fatesHand.Start();
 				}
 			}
 		}
@@ -329,14 +311,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments.</param>
 		public void SetDefaultDiceSidesToolStripMenuItemClick(object sender, System.EventArgs e)
 		{
-			DiceSidesDialog dsDialog = new DiceSidesDialog(this.diceSides);
+			var dsDialog = new DiceSidesDialog(diceSides);
 			dsDialog.ShowDialog();
-			if (dsDialog.DialogResult != DialogResult.Cancel && this.diceSides != dsDialog.numberOfDiceSides){
-				this.diceSides = dsDialog.numberOfDiceSides;
-				if ((this.config != null)) {
-					this.config.SetDiceSides(this.diceSides);
+			if (dsDialog.DialogResult != DialogResult.Cancel && diceSides != dsDialog.numberOfDiceSides){
+				diceSides = dsDialog.numberOfDiceSides;
+				if ((config != null)) {
+					config.SetDiceSides(diceSides);
 				}
-				this.d20Button.Text = "D"+this.diceSides.ToString();
+				d20Button.Text = "D"+diceSides.ToString();
 			}
 		}
 		
@@ -348,16 +330,16 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments.</param>
 		public void FatesHandTick(object sender, EventArgs e){
 			//If we have one or more charcters.
-			if(this.charList.Items.Count > 0){
+			if(charList.Items.Count > 0){
 				//Initialize a psudo-random and pick oneof the characters in the list.
-				Random fate = new Random();
-				int fated = fate.Next(0, this.charList.Items.Count);
-				this.notificationLabel.Text = "Fate's Hand has selected "+castOfCharacters[fated].characterName.ToString()+"!";
+				var fate = new Random();
+				int fated = fate.Next(0, charList.Items.Count);
+				notificationLabel.Text = "Fate's Hand has selected "+castOfCharacters[fated].characterName.ToString()+"!";
 				MessageBox.Show("Fate's Hand has selected "+castOfCharacters[fated].characterName.ToString()+"!", "Fate's Hand", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 			}
 			//If the timer is still a go, restart the timer.
-			if(this.fateTimerToolStripMenuItem.Checked){
-				this.fatesHand.Start();
+			if(fateTimerToolStripMenuItem.Checked){
+				fatesHand.Start();
 			}
 		}
 		
@@ -369,7 +351,7 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void MainFormFormClosing(object sender, FormClosingEventArgs e)
 		{
-			this.DoApplicationClose();
+			DoApplicationClose();
 		}
 		
 		/// <summary>
@@ -379,7 +361,7 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void QuitProgram(object sender, EventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 		
 		/// <summary>
@@ -391,17 +373,17 @@ namespace CharSheetV2
 		public void D20ButtonClick(object sender, EventArgs e)
 		{
 			//Get the die value  (1D20)
-			int dieValue = this.RollDie(this.diceSides, Int32.Parse(this.diceCount.Value.ToString()));
+			int dieValue = RollDie(diceSides, Int32.Parse(diceCount.Value.ToString()));
 			
 			//If there mod value is set, add it. Otherwise, don't.
 			int modValue = 0;
 			if( d20Modifier.SelectedIndex != -1 ){
 				Int32.TryParse(d20Modifier.SelectedItem.ToString(), out modValue);
-				this.notificationLabel.Text = "Rolled "+diceCount+" D"+this.diceSides.ToString()+" and got "+(dieValue+modValue)+" ("+modValue+")...";
+				notificationLabel.Text = "Rolled "+diceCount+" D"+diceSides.ToString()+" and got "+(dieValue+modValue)+" ("+modValue+")...";
 			}else{
-				this.notificationLabel.Text = "Rolled "+diceCount+" D"+this.diceSides.ToString()+" and got "+dieValue+"...";
+				notificationLabel.Text = "Rolled "+diceCount+" D"+diceSides.ToString()+" and got "+dieValue+"...";
 			}
-			this.diceCount.Value=1;
+			diceCount.Value=1;
 		}
 		
 		/// <summary>
@@ -412,7 +394,7 @@ namespace CharSheetV2
 		/// <returns>The result of the dice 'roll'</returns>
 		public int RollDie(int sides, int count){
 			//Initialize a psudo-random and pick a number between 1 and n.
-			Random dice = new Random();
+			var dice = new Random();
 			int diceTotal = 0, diceToRoll = count;
 			for(int i = diceToRoll; i > 0; i--) {
 				diceTotal += dice.Next(1, sides+1);
@@ -428,27 +410,27 @@ namespace CharSheetV2
 		public void SkillDiceButtonClick(object sender, EventArgs e)
 		{
 			//Do we have a character selected?
-			if (this.charList.SelectedIndex >= 0) {	
+			if (charList.SelectedIndex >= 0) {	
 				//Do we have more that one character?
-				if (this.charList.CheckedItems.Count > 1) {
+				if (charList.CheckedItems.Count > 1) {
 					//If not yet in a skill check...
-					if (this.skillCheck != true) {
+					if (skillCheck != true) {
 						//Setup for a multiplayer skill check
-						this.notificationLabel.Text = "Click on skill or attribute to roll against for the selected characters...";
+						notificationLabel.Text = "Click on skill or attribute to roll against for the selected characters...";
 						brawlers = new List<Combatant>();
 					} else {
 						//Otherwise, terminate a skill check.
-						this.skillCheck = false;
+						skillCheck = false;
 						brawlers.Clear();
-						this.notificationLabel.Text = "Canceled VS mode...";
+						notificationLabel.Text = "Canceled VS mode...";
 					}
 				} else {
 					//Single-player skill check.
-					this.notificationLabel.Text = "Click on skill or attribute to roll against...";
+					notificationLabel.Text = "Click on skill or attribute to roll against...";
 				}
-				this.skillCheck = true;
+				skillCheck = true;
 			} else {
-				this.notificationLabel.Text = "Select one or more characters from the list.";
+				notificationLabel.Text = "Select one or more characters from the list.";
 			}
 			
 		}
@@ -460,25 +442,25 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments.</param>
 		public void SaveChangesToDatabase(object sender, EventArgs e)
 		{
-			if (this.changesMade || this.config.IsConfigChanged()) {
+			if (changesMade || config.IsConfigChanged()) {
 				//Enumerate over the characters in the list
 				IEnumerator<CharacterSheetModel> savable = castOfCharacters.GetEnumerator();
 				while (savable.MoveNext()) {
 					//If the character is 'volatile', then we need to save it's state.
 					if (savable.Current.GetVolatility()) {
-						this.notificationLabel.Text = "Saving " + savable.Current.characterName + "...";
+						notificationLabel.Text = "Saving " + savable.Current.characterName + "...";
 					    savable.Current.Save();
 					}
 				}
-				if (this.config.IsConfigChanged()){
-					this.config.SaveConfiguration();
+				if (config.IsConfigChanged()){
+					config.SaveConfiguration();
 				}
 				//Clean up database.
-				this.database.VacuumDatabase();
-				this.notificationLabel.Text = "All Changes Saved!";
-				this.changesMade = false;
+				database.VacuumDatabase();
+				notificationLabel.Text = "All Changes Saved!";
+				changesMade = false;
 			} else {
-				this.notificationLabel.Text = "No changes detected.";
+				notificationLabel.Text = "No changes detected.";
 			}
 		}
 		
@@ -490,13 +472,13 @@ namespace CharSheetV2
 		public void CreateNewCharacter(object sender, EventArgs e)
 		{
 			//Initialize a new character model object.
-			CharacterSheetModel newCharacter = new CharacterSheetModel();
+			var newCharacter = new CharacterSheetModel();
 			//Set it's name and id
 			newCharacter.characterName = "New Character";
 			newCharacter.characterId = -1;
 			//Add the character to the database and the interface.
-			this.castOfCharacters.Add(newCharacter);
-			this.charList.Items.Add(newCharacter.characterName);
+			castOfCharacters.Add(newCharacter);
+			charList.Items.Add(newCharacter.characterName);
 			newCharacter.Save();
 			newCharacter.LoadCharacterById(newCharacter.characterId);
 		}
@@ -509,25 +491,22 @@ namespace CharSheetV2
 		public void DeleteSelectedCharacter(object sender, EventArgs e)
 		{
 			//Ensure that we have at least one character marked.
-			if (this.charList.CheckedItems.Count == 0) {
+			if (charList.CheckedItems.Count == 0) {
 				MessageBox.Show("There are no characters marked for deletion.\nPlease check the box next to the characters you wish to delete and try again.", 
 				                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 			
 			//Populate a list of names of selected characters for confirmation.
-			String names = "";
-			for (int i = 0; i < this.charList.CheckedItems.Count; i++) {
-				names += this.charList.CheckedItems[i].ToString() + ", ";
+			string names = "";
+			for (int i = 0; i < charList.CheckedItems.Count; i++) {
+				names += charList.CheckedItems[i].ToString() + ", ";
 				if (i % 3 == 0 && i != 0) {
 					names += "\n";
 				}
 			}
-			if (names.LastIndexOf("\n") == names.Length) {
-				names = names.Substring(0, names.Length - 3);
-			} else {
-				names = names.Substring(0, names.Length - 2);
-			}
+            names = names.LastIndexOf("\n") == names.Length ? names.Substring(0, names.Length - 3) : names.Substring(0, names.Length - 2);
+            
 			//Show he confirmation dialog.
 			DialogResult result = MessageBox.Show("The following characters will be deleted permanently:\n\n" + 
 			                                       names + "\n\nAre you sure? This cannot be undone!", 
@@ -535,20 +514,20 @@ namespace CharSheetV2
 			//If we want to delete the character(s)
 			if (result == DialogResult.Yes) {
 				//We're deleting, so empty th UI elements.
-				this.deletingCharacters = true;
-				this.EmptyUIFields();
+				deletingCharacters = true;
+				EmptyUIFields();
 				//Look through the list of characters, and remove the characters from the lists an database.
-				for(int i = this.castOfCharacters.Count - 1; i >= 0; i--) {
-					if (this.charList.CheckedIndices.Contains(i)) {
-						this.castOfCharacters[i].Delete();
-						this.castOfCharacters.RemoveAt(i);
-						this.charList.Items.RemoveAt(i);
+				for(int i = castOfCharacters.Count - 1; i >= 0; i--) {
+					if (charList.CheckedIndices.Contains(i)) {
+						castOfCharacters[i].Delete();
+						castOfCharacters.RemoveAt(i);
+						charList.Items.RemoveAt(i);
 					}
 				}
 				//Update the list and clean up the database.
-				this.charList.Update();
-				this.database.VacuumDatabase();
-				this.deletingCharacters = false;
+				charList.Update();
+				database.VacuumDatabase();
+				deletingCharacters = false;
 			}
 		}
 		
@@ -560,7 +539,7 @@ namespace CharSheetV2
 		public void ExportAsCharsheetsClick(object sender, EventArgs e)
 		{
 			//Get a file browser dialog setup
-			FolderBrowserDialog saveCharSheets = new FolderBrowserDialog();
+			var saveCharSheets = new FolderBrowserDialog();
 			saveCharSheets.ShowNewFolderButton = true;
 			saveCharSheets.RootFolder = System.Environment.SpecialFolder.Desktop;
 			DialogResult result = saveCharSheets.ShowDialog();
@@ -568,21 +547,21 @@ namespace CharSheetV2
 			if (result == DialogResult.OK) {
 				//On 'Ok'
 				int exported = 0;
-				for(int x = 0; x < this.charList.Items.Count; x++) {
+				for(int x = 0; x < charList.Items.Count; x++) {
 					//Get the checked characters
-					if ( this.charList.GetItemChecked(this.charList.Items.IndexOf(this.charList.Items[x]))) {
+					if ( charList.GetItemChecked(charList.Items.IndexOf(charList.Items[x]))) {
 						//Make a new file from their name
-						String filePath = saveCharSheets.SelectedPath + System.IO.Path.DirectorySeparatorChar 
-									    + castOfCharacters[this.charList.Items.IndexOf(this.charList.Items[x])].characterName.Replace(" ", "_") + ".txt";
+						string filePath = saveCharSheets.SelectedPath + System.IO.Path.DirectorySeparatorChar 
+									    + castOfCharacters[charList.Items.IndexOf(charList.Items[x])].characterName.Replace(" ", "_") + ".txt";
 						//Trigger the export method on the model.
-						if (castOfCharacters[this.charList.Items.IndexOf(this.charList.Items[x])].ExportAsCharSheet(filePath)) {
+						if (castOfCharacters[charList.Items.IndexOf(charList.Items[x])].ExportAsCharSheet(filePath)) {
 							exported ++;
 						}
 					}
 				}
 				MessageBox.Show("" + exported + " character sheets exported to\n" + saveCharSheets.SelectedPath, "Success!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 			} else {
-				this.notificationLabel.Text = "Export canceled...";
+				notificationLabel.Text = "Export canceled...";
 			}
 		}
 		
@@ -594,7 +573,7 @@ namespace CharSheetV2
 		public void ExportAsDatabaseClick(object sender, EventArgs e)
 		{
 			//Open a save dialog.
-			SaveFileDialog exportDb = new SaveFileDialog();
+			var exportDb = new SaveFileDialog();
 			exportDb.AddExtension = true;
 			exportDb.InitialDirectory = System.Environment.SpecialFolder.MyDocuments.ToString();
 			exportDb.Filter = "CharSheet Database (.db)|*.db|All Files (*.*)|*.*";
@@ -603,25 +582,25 @@ namespace CharSheetV2
 			if (result == DialogResult.OK) { //On 'Ok'
 				int exported = 0;
 				int exporting = 0;
-				this.notificationLabel.Text = "Exporting...";
-				CharacterDataInterface newDB = new CharacterDataInterface(exportDb.FileName);
+				notificationLabel.Text = "Exporting...";
+				var newDB = new CharacterDataInterface(exportDb.FileName);
 				
 				//Initialize a background thread.
-				BackgroundWorker parser = new BackgroundWorker();
+				var parser = new BackgroundWorker();
 				parser.WorkerReportsProgress = true;
 				
-				for(int i = 0; i < this.charList.Items.Count; i++) {
-					if ( this.charList.GetItemChecked(this.charList.Items.IndexOf(this.charList.Items[i]))) {
+				for(int i = 0; i < charList.Items.Count; i++) {
+					if ( charList.GetItemChecked(charList.Items.IndexOf(charList.Items[i]))) {
 						exporting++;
 					}
 				}
 				
 				//Setup the delegate/handler to actually do the work.
 				parser.DoWork += delegate(object workSender, DoWorkEventArgs ex) {
-					for(int x = 0; x < this.charList.Items.Count; x++) {
+					for(int x = 0; x < charList.Items.Count; x++) {
 						//Get the checked characters
-						if ( this.charList.GetItemChecked(this.charList.Items.IndexOf(this.charList.Items[x]))) {
-							CharacterSheetModel exportChar = new CharacterSheetModel(exportDb.FileName);
+						if ( charList.GetItemChecked(charList.Items.IndexOf(charList.Items[x]))) {
+							var exportChar = new CharacterSheetModel(exportDb.FileName);
 							if (exportChar.CloneFromCharacter(castOfCharacters[x])) {
 								parser.ReportProgress(++exported);
 							}
@@ -630,7 +609,7 @@ namespace CharSheetV2
 				};
 				
 				//Setup the delegat/handler to update our 'progress' indicator.
-                parser.ProgressChanged += (object progressSender, ProgressChangedEventArgs ex) => this.notificationLabel.Text = "Exporting Records.\nPlease Wait...[" + (ex.ProgressPercentage / exporting) * 100 + "%]";
+                parser.ProgressChanged += (object progressSender, ProgressChangedEventArgs ex) => notificationLabel.Text = "Exporting Records.\nPlease Wait...[" + (ex.ProgressPercentage / exporting) * 100 + "%]";
 				
 				//Setup delegate/handler to process the completion message.
 				parser.RunWorkerCompleted += delegate(object completeSender, RunWorkerCompletedEventArgs ext) {
@@ -646,7 +625,7 @@ namespace CharSheetV2
 					Application.DoEvents();
 				}
 			} else {
-				this.notificationLabel.Text = "Export canceled...";
+				notificationLabel.Text = "Export canceled...";
 			}
 		}
 		
@@ -656,7 +635,7 @@ namespace CharSheetV2
 		/// <param name="sender">The sender</param>
 		/// <param name="e">The event arguments</param>
 		public void AboutMenuItemClicked(object sender, EventArgs e){
-			AboutDialog infoBox = new AboutDialog();
+			var infoBox = new AboutDialog();
 			infoBox.Show(this);
 		}
 		
@@ -670,42 +649,41 @@ namespace CharSheetV2
 			bool success = false;
 			//For activity indication
 			int progress = 0;
-			String[] processAnim = new String[16] {"-", "-", "-", "-", "\\", "\\", "\\", "\\", "|", 
-												   "|", "|", "|","/", "/", "/", "/"};
+			string[] processAnim = {"-", "-", "-", "-", "\\", "\\", "\\", "\\", "|", "|", "|", "|","/", "/", "/", "/"};
 			
 			//Open a file open dialog so the user can find the file
-			OpenFileDialog importDialog = new OpenFileDialog();
+			var importDialog = new OpenFileDialog();
 			importDialog.Title = "Import Character Sheet Data...";
 			importDialog.InitialDirectory = System.Environment.SpecialFolder.MyDocuments.ToString();
 			importDialog.Multiselect = false;
 			importDialog.Filter = "CharSheet Dat Files (.dat)|*.dat|All Files (*.*)|*.*";
 			DialogResult result = importDialog.ShowDialog();
-			this.notificationLabel.Text = "Starting up...";
+			notificationLabel.Text = "Starting up...";
 			
 			//If they click the OK button
 			if (result == DialogResult.OK) {
 				//Updating the UI requires that we run this in a background thread
-				BackgroundWorker parser = new BackgroundWorker();
+				var parser = new BackgroundWorker();
 				parser.WorkerReportsProgress = true;
 				
 				//Setup the delegat/handler to update our 'progress' indicator.
-                parser.ProgressChanged += (object progressSender, ProgressChangedEventArgs ex) => this.notificationLabel.Text = "Parsing data file.\nPlease Wait...[" + processAnim[ex.ProgressPercentage % processAnim.GetLength(0)] + "]\n\nThis may take a while...";
+                parser.ProgressChanged += (object progressSender, ProgressChangedEventArgs ex) => notificationLabel.Text = "Parsing data file.\nPlease Wait...[" + processAnim[ex.ProgressPercentage % processAnim.GetLength(0)] + "]\n\nThis may take a while...";
 				//Setup the delegate/handler to actually do the work.
-                parser.DoWork += (object workSender, DoWorkEventArgs ex) => success = this.database.ParseCharSheetData(File.ReadAllText(@importDialog.FileName));
+                parser.DoWork += (object workSender, DoWorkEventArgs ex) => success = database.ParseCharSheetData(File.ReadAllText(@importDialog.FileName));
 				//Setup the handler/delecate to handle the results of the operation.
 				parser.RunWorkerCompleted += delegate(object completeSender, RunWorkerCompletedEventArgs ext) {
 					if(success) {
 						//When done importing, update the character list and reset with new data.
-						this.notificationLabel.Text = "Data Imported...[OK]";
+						notificationLabel.Text = "Data Imported...[OK]";
 						MessageBox.Show("Character data import was successful!", "Import Success!", 
 						                MessageBoxButtons.OK, MessageBoxIcon.Information);
-						this.charList.Invalidate(true);
-						this.castOfCharacters = null;
-						this.InitCharacterList();
+						charList.Invalidate(true);
+						castOfCharacters = null;
+						InitCharacterList();
 					} 
 					if (ext.Error != null) {
 						//Oops....
-						this.notificationLabel.Text = "Error importing character data!";
+						notificationLabel.Text = "Error importing character data!";
 						MessageBox.Show("There was an error parsing the character sheet data.\n"
 						                +"The error was:\n" + ext.Error.Message + ": " 
 						                + ext.Error.StackTrace + "\n\nPlease check your data file and try again!",
@@ -722,11 +700,7 @@ namespace CharSheetV2
 					Application.DoEvents();
 				}
 			} else {
-				if(this.charList.Items.Count > 0){
-					this.notificationLabel.Text = "Ready...";
-				} else {
-					this.notificationLabel.Text = "Still no characters. Perhaps you should make some?";
-				}
+                notificationLabel.Text = charList.Items.Count > 0 ? "Ready..." : "Still no characters. Perhaps you should make some?";
 			}
 		}
 
@@ -739,22 +713,21 @@ namespace CharSheetV2
 		{
 			//For activity indication
 			int progress = 0;
-			String[] processAnim = new String[16] {"-", "-", "-", "-", "\\", "\\", "\\", "\\", "|", 
-												   "|", "|", "|","/", "/", "/", "/"};
+			string[] processAnim = {"-", "-", "-", "-", "\\", "\\", "\\", "\\", "|", "|", "|", "|","/", "/", "/", "/"};
 			//Open file dialog
-			OpenFileDialog importDBDialog = new OpenFileDialog();
+			var importDBDialog = new OpenFileDialog();
 			importDBDialog.InitialDirectory = System.Environment.SpecialFolder.MyDocuments.ToString();
 			importDBDialog.Filter = "CharSheet Database (.db)|*.db|All Files (*.*)|*.*";
 			DialogResult result = importDBDialog.ShowDialog();
 			
 			if (result == DialogResult.OK) { //On 'Ok'
-				this.notificationLabel.Text = "Importing...";
+				notificationLabel.Text = "Importing...";
 				//Open the import DB and pull in the characters table.
-				CharacterDataInterface importDB = new CharacterDataInterface(importDBDialog.FileName);
+				var importDB = new CharacterDataInterface(importDBDialog.FileName);
 				DataTable importCharacters = importDB.GetTable("characters");
 				
 				//Initialize a background thread.
-				BackgroundWorker parser = new BackgroundWorker();
+				var parser = new BackgroundWorker();
 				parser.WorkerReportsProgress = true;
 				
 				//Setup the delegate/handler to actually do the work.
@@ -763,8 +736,8 @@ namespace CharSheetV2
 						//If we have characters...
 						foreach(DataRow row in importCharacters.Rows){
 							//Load the character object from the database.
-							CharacterSheetModel importCharacter = new CharacterSheetModel(importDBDialog.FileName);
-							CharacterSheetModel newCharacter = new CharacterSheetModel();
+							var importCharacter = new CharacterSheetModel(importDBDialog.FileName);
+							var newCharacter = new CharacterSheetModel();
 							importCharacter.LoadCharacterById(int.Parse(row.ItemArray.GetValue(0).ToString()));
 							//clone the character and it's data to this data base.
 							newCharacter.CloneFromCharacter(importCharacter);
@@ -774,7 +747,7 @@ namespace CharSheetV2
 				};
 				
 				//Setup the delegat/handler to update our 'progress' indicator.
-                parser.ProgressChanged += (object progressSender, ProgressChangedEventArgs ex) => this.notificationLabel.Text = "Importing Records.\nPlease Wait...[" + processAnim[ex.ProgressPercentage % processAnim.GetLength(0)] + "]";
+                parser.ProgressChanged += (object progressSender, ProgressChangedEventArgs ex) => notificationLabel.Text = "Importing Records.\nPlease Wait...[" + processAnim[ex.ProgressPercentage % processAnim.GetLength(0)] + "]";
 				
 				//Setup delegate/handler to process the completion message.
 				parser.RunWorkerCompleted += delegate(object completeSender, RunWorkerCompletedEventArgs ext) {
@@ -782,9 +755,9 @@ namespace CharSheetV2
 					importDB.VacuumDatabase();
 					MessageBox.Show("Characters imported successfully!", 
 					                "Success!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-					this.charList.Invalidate(true);
-					this.castOfCharacters = null;
-					this.InitCharacterList();
+					charList.Invalidate(true);
+					castOfCharacters = null;
+					InitCharacterList();
 				};
 				
 				parser.RunWorkerAsync();
@@ -794,7 +767,7 @@ namespace CharSheetV2
 					Application.DoEvents();
 				}
 			} else {
-				this.notificationLabel.Text = "Export canceled...";
+				notificationLabel.Text = "Export canceled...";
 			}
 		}		
 		/// <summary>
@@ -804,14 +777,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharGenderSelectionChangeCommitted(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterGender != this.charGender.Items[this.charGender.SelectedIndex].ToString()) {
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterGender != charGender.Items[charGender.SelectedIndex].ToString()) {
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterGender = this.charGender.Items[this.charGender.SelectedIndex].ToString();
+				currentCharacter.characterGender = charGender.Items[charGender.SelectedIndex].ToString();
 			}
 		}
 		
@@ -822,14 +795,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void KarmaPointsValueChanged(object sender, System.EventArgs e)
 		{
-			if (this.currentCharacter != null) {
-				if (Convert.ToInt32(this.karmaPoints.Value) != this.currentCharacter.characterKarma) {
-					this.changesMade = true;
-					this.currentCharacter.SetVolatility(true);
+			if (currentCharacter != null) {
+				if (Convert.ToInt32(karmaPoints.Value) != currentCharacter.characterKarma) {
+					changesMade = true;
+					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterKarma = Convert.ToInt32(this.karmaPoints.Value);
+				currentCharacter.characterKarma = Convert.ToInt32(karmaPoints.Value);
 			}
 		}
 		
@@ -840,14 +813,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharAgeValueChanged(object sender, EventArgs e)
 		{
-			if (this.currentCharacter != null) {
-				if (Convert.ToInt32(this.charAge.Value) != this.currentCharacter.characterAge) {
-					this.changesMade = true;
-					this.currentCharacter.SetVolatility(true);
+			if (currentCharacter != null) {
+				if (Convert.ToInt32(charAge.Value) != currentCharacter.characterAge) {
+					changesMade = true;
+					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterAge = Convert.ToInt32(this.charAge.Value);
+				currentCharacter.characterAge = Convert.ToInt32(charAge.Value);
 			}
 		}
 		
@@ -858,14 +831,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void ExperiencePointsValueChanged(object sender, EventArgs e)
 		{
-			if (this.currentCharacter != null) {
-				if (Convert.ToInt32(this.experiencePoints.Value) != this.currentCharacter.characterExperience) {
-					this.changesMade = true;
-					this.currentCharacter.SetVolatility(true);
+			if (currentCharacter != null) {
+				if (Convert.ToInt32(experiencePoints.Value) != currentCharacter.characterExperience) {
+					changesMade = true;
+					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterExperience = Convert.ToInt32(this.experiencePoints.Value);
+				currentCharacter.characterExperience = Convert.ToInt32(experiencePoints.Value);
 			}
 		}
 		
@@ -876,15 +849,15 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharNameTextChanged(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterName != this.charName.Text) {
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterName != charName.Text) {
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterName = this.charName.Text;
-				this.charList.Items[this.charList.SelectedIndex] = this.charName.Text;
+				currentCharacter.characterName = charName.Text;
+				charList.Items[charList.SelectedIndex] = charName.Text;
 			}
 		}
 		
@@ -895,14 +868,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharCallsignTextChanged(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterCallsign != this.charCallsign.Text){
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterCallsign != charCallsign.Text){
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterCallsign = this.charCallsign.Text;
+				currentCharacter.characterCallsign = charCallsign.Text;
 			}
 		}
 		
@@ -913,14 +886,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharSpeciesTextChanged(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterSpecies != this.charSpecies.Text) {
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterSpecies != charSpecies.Text) {
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterSpecies = this.charSpecies.Text;
+				currentCharacter.characterSpecies = charSpecies.Text;
 			}
 		}
 		
@@ -931,14 +904,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharHeightTextChanged(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterHeight != this.charHeight.Text) {
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterHeight != charHeight.Text) {
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterHeight = this.charHeight.Text;
+				currentCharacter.characterHeight = charHeight.Text;
 			}
 		}
 		
@@ -949,14 +922,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharWeightTextChanged(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterWeight != this.charWeight.Text) {
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterWeight != charWeight.Text) {
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterWeight = this.charWeight.Text;
+				currentCharacter.characterWeight = charWeight.Text;
 			}
 
 		}
@@ -968,14 +941,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharAffiliationTextChanged(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterAffiliation != this.charAffiliation.Text){
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterAffiliation != charAffiliation.Text){
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterAffiliation = this.charAffiliation.Text;
+				currentCharacter.characterAffiliation = charAffiliation.Text;
 			}
 		}
 		
@@ -986,14 +959,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharRankTextChanged(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterRank != this.charRank.Text) {
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterRank != charRank.Text) {
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterRank = this.charRank.Text;
+				currentCharacter.characterRank = charRank.Text;
 			}
 		}
 		
@@ -1004,14 +977,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharAdvantagesDisadvantagesTextChanged(object sender, EventArgs e)
 		{			
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterAdvantages != this.charAdvantagesDisadvantages.Text) {
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterAdvantages != charAdvantagesDisadvantages.Text) {
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterAdvantages = this.charAdvantagesDisadvantages.Text;
+				currentCharacter.characterAdvantages = charAdvantagesDisadvantages.Text;
 			}
 			
 		}
@@ -1023,14 +996,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharBackgroundTextChanged(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterBackground != this.charBackground.Text) {
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterBackground != charBackground.Text) {
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterBackground = this.charBackground.Text;
+				currentCharacter.characterBackground = charBackground.Text;
 			}
 		}
 		
@@ -1041,14 +1014,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharInventoryTextChanged(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterInventory != this.charInventory.Text) {
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterInventory != charInventory.Text) {
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterInventory = this.charInventory.Text;
+				currentCharacter.characterInventory = charInventory.Text;
 			}
 		}
 		
@@ -1059,14 +1032,14 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments</param>
 		public void CharNotesTextChanged(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
-				if(this.currentCharacter.characterNotes != this.charNotes.Text){
-					this.changesMade = true;
+			if(currentCharacter != null) {
+				if(currentCharacter.characterNotes != charNotes.Text){
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.characterNotes = this.charNotes.Text;
+				currentCharacter.characterNotes = charNotes.Text;
 			}
 		}
 		
@@ -1078,21 +1051,21 @@ namespace CharSheetV2
 		public void CharNPCCheckedChanged(object sender, EventArgs e)
 		{
 			int state = 0;
-			if(this.currentCharacter != null) {
-				if(this.charNPC.Checked) {
+			if(currentCharacter != null) {
+				if(charNPC.Checked) {
 					state = 1;
-					this.charNPC.ForeColor = Color.Red;
+					charNPC.ForeColor = Color.Red;
 				} else {
 					state = 0;
-					this.charNPC.ForeColor = Color.Black;
+					charNPC.ForeColor = Color.Black;
 				}
-				if (state != this.currentCharacter.isNPC) {
-					this.changesMade = true;
+				if (state != currentCharacter.isNPC) {
+					changesMade = true;
 					currentCharacter.SetVolatility(true);
 				} else {
 					currentCharacter.SetVolatility(false);
 				}
-				this.currentCharacter.isNPC = state;
+				currentCharacter.isNPC = state;
 			}
 		}
 		
@@ -1103,14 +1076,14 @@ namespace CharSheetV2
 		/// <param name="e">The arguments for the event.</param>
 		public void SkillDataGridViewCellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{	//If we have a character loaded.
-			if(this.currentCharacter != null) {
+			if(currentCharacter != null) {
 				//Get the gridview requesting the edit.
-				DataGridView v = (DataGridView) sender;
+				var v = (DataGridView) sender;
 				DataGridViewRow skillRow = v.Rows[e.RowIndex];
 				
 				//Setup key/value sets
-				String[] keys = new String[skillRow.Cells.Count - 1];
-				String[] values = new String[skillRow.Cells.Count - 1];
+				var keys = new string[skillRow.Cells.Count - 1];
+				var values = new string[skillRow.Cells.Count - 1];
 				
 				//Populate the key/value sets
 				for(int i = 1; i < skillRow.Cells.Count; i++)
@@ -1121,18 +1094,18 @@ namespace CharSheetV2
 				//If the row has no key id set
 				if (Int32.Parse(skillRow.Cells[0].Value.ToString()) == -1) {
 					//New row
-					skillRow.Cells[0].Value = this.database.InsertRecord("skills", keys, values);
+					skillRow.Cells[0].Value = database.InsertRecord("skills", keys, values);
 				} else {
 					//Updating the existing row.
-					this.database.UpdateRecord("skills", keys, values, "sid", skillRow.Cells[0].Value.ToString());
+					database.UpdateRecord("skills", keys, values, "sid", skillRow.Cells[0].Value.ToString());
 				}
 				
 				//Update the row total label.
 				int skillSum = 0;
-				for (int x = 0; x < this.skillDataGridView.Rows.Count; x++) {
-					skillSum += Convert.ToInt32(this.skillDataGridView.Rows[x].Cells[3].Value);
+				for (int x = 0; x < skillDataGridView.Rows.Count; x++) {
+					skillSum += Convert.ToInt32(skillDataGridView.Rows[x].Cells[3].Value);
 				}
-				this.skillPoints.Text = this.skillPoints.Text.Substring(0, this.skillPoints.Text.LastIndexOf(':') + 1) + skillSum;
+				skillPoints.Text = skillPoints.Text.Substring(0, skillPoints.Text.LastIndexOf(':') + 1) + skillSum;
 			}
 		}
 		
@@ -1144,12 +1117,12 @@ namespace CharSheetV2
 		public void SkillDataGridViewUserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
 		{
 			//Make sure we have a character selected.
-			if(this.currentCharacter != null) {
+			if(currentCharacter != null) {
 				DialogResult response = MessageBox.Show("This operation is permanent and immediate!\nAre you sure you wish to delete this skill?\nThis cannot be undone!", 
 				                						"Delete Skill", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 				if (response == DialogResult.Yes) {
 					//If we really want to delete this, get the requesting row's key id and delete.
-					this.database.DeleteRecord("skills", "sid", e.Row.Cells[0].Value.ToString());
+					database.DeleteRecord("skills", "sid", e.Row.Cells[0].Value.ToString());
 				} else {
 					e.Cancel = true;
 				}
@@ -1165,10 +1138,10 @@ namespace CharSheetV2
 		{
 			//When the row is completely gone...update the row total label.
 			int skillSum = 0;
-			for (int x = 0; x < this.skillDataGridView.Rows.Count; x++) {
-				skillSum += Convert.ToInt32(this.skillDataGridView.Rows[x].Cells[3].Value);
+			for (int x = 0; x < skillDataGridView.Rows.Count; x++) {
+				skillSum += Convert.ToInt32(skillDataGridView.Rows[x].Cells[3].Value);
 			}
-			this.skillPoints.Text = this.skillPoints.Text.Substring(0, this.skillPoints.Text.LastIndexOf(':') + 1) + skillSum;
+			skillPoints.Text = skillPoints.Text.Substring(0, skillPoints.Text.LastIndexOf(':') + 1) + skillSum;
 		}
 		
 		/// <summary>
@@ -1179,14 +1152,14 @@ namespace CharSheetV2
 		public void AttributesDataGridViewCellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
 			//Make sure we have a character selected.
-			if(this.currentCharacter != null) {
+			if(currentCharacter != null) {
 				//Get the gridview requesting an edit.
-				DataGridView v = (DataGridView) sender;
+				var v = (DataGridView) sender;
 				DataGridViewRow attributeRow = v.Rows[e.RowIndex];
 				
 				//Setup key/value data sets.
-				String[] keys = new String[attributeRow.Cells.Count - 1];
-				String[] values = new String[attributeRow.Cells.Count - 1];
+				var keys = new string[attributeRow.Cells.Count - 1];
+				var values = new string[attributeRow.Cells.Count - 1];
 				
 				//Populate the data arrays from the table.
 				for(int i = 1; i < attributeRow.Cells.Count; i++)
@@ -1198,18 +1171,18 @@ namespace CharSheetV2
 				//If the row has no key id set.
 				if (Int32.Parse(attributeRow.Cells[0].Value.ToString()) == -1) {
 					//Insert the new row and update the gridview with the resulting key.
-					attributeRow.Cells[0].Value = this.database.InsertRecord("attributes", keys, values);
+					attributeRow.Cells[0].Value = database.InsertRecord("attributes", keys, values);
 				} else {
 					//Update the existing record.
-					this.database.UpdateRecord("attributes", keys, values, "aid", attributeRow.Cells[0].Value.ToString());
+					database.UpdateRecord("attributes", keys, values, "aid", attributeRow.Cells[0].Value.ToString());
 				}
 				
 				//Update the row total label.
 				int attrSum = 0;
-				for (int x = 0; x < this.attributesDataGridView.Rows.Count; x++) {
-					attrSum += Convert.ToInt32(this.attributesDataGridView.Rows[x].Cells[3].Value);
+				for (int x = 0; x < attributesDataGridView.Rows.Count; x++) {
+					attrSum += Convert.ToInt32(attributesDataGridView.Rows[x].Cells[3].Value);
 				}
-				this.attrPoints.Text = this.attrPoints.Text.Substring(0, this.attrPoints.Text.LastIndexOf(':') + 1) + attrSum;
+				attrPoints.Text = attrPoints.Text.Substring(0, attrPoints.Text.LastIndexOf(':') + 1) + attrSum;
 			}
 		}
 		
@@ -1220,12 +1193,12 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments.</param>
 		public void AttributesDataGridViewUserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
 		{
-			if(this.currentCharacter != null) {
+			if(currentCharacter != null) {
 				DialogResult response = MessageBox.Show("This operation is permanent and immediate!\nAre you sure you wish to delete this attribute?\nThis cannot be undone!", 
 				                						"Delete Attribute", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 				if (response == DialogResult.Yes) {
 					//If we confirm to delete the record, then delete the row from the database.
-					this.database.DeleteRecord("attributes", "aid", e.Row.Cells[0].Value.ToString());
+					database.DeleteRecord("attributes", "aid", e.Row.Cells[0].Value.ToString());
 				} else {
 					e.Cancel = true;
 				}
@@ -1241,10 +1214,10 @@ namespace CharSheetV2
 		{
 			//Once the row is actually deleted, update the row total label.
 			int attrSum = 0;
-			for (int x = 0; x < this.attributesDataGridView.Rows.Count; x++) {
-				attrSum += Convert.ToInt32(this.attributesDataGridView.Rows[x].Cells[3].Value);
+			for (int x = 0; x < attributesDataGridView.Rows.Count; x++) {
+				attrSum += Convert.ToInt32(attributesDataGridView.Rows[x].Cells[3].Value);
 			}
-			this.attrPoints.Text = this.attrPoints.Text.Substring(0, this.attrPoints.Text.LastIndexOf(':') + 1) + attrSum;
+			attrPoints.Text = attrPoints.Text.Substring(0, attrPoints.Text.LastIndexOf(':') + 1) + attrSum;
 		}
 		
 		/// <summary>
@@ -1252,32 +1225,32 @@ namespace CharSheetV2
 		/// </summary>
 		public void EmptyUIFields() {
 			//Set alot of fields.
-			this.currentCharacter = null;
-			this.charName.Text = "";
-			this.charCallsign.Text = "";
-			this.charSpecies.Text = "";
-			this.charGender.SelectedIndex = this.charGender.FindString("Male");
-			this.charAffiliation.Text = "";
-			this.charAge.Value = 18;
-			this.charHeight.Text = "";
-			this.charWeight.Text = "";
-			this.charRank.Text = "";
-			this.karmaPoints.Value = 0;
-			this.experiencePoints.Value = 0;
-			this.charBackground.Text = "";
-			this.charAdvantagesDisadvantages.Text = "";
-			this.charNotes.Text = "";
-			this.charInventory.Text = "";
+			currentCharacter = null;
+			charName.Text = "";
+			charCallsign.Text = "";
+			charSpecies.Text = "";
+			charGender.SelectedIndex = charGender.FindString("Male");
+			charAffiliation.Text = "";
+			charAge.Value = 18;
+			charHeight.Text = "";
+			charWeight.Text = "";
+			charRank.Text = "";
+			karmaPoints.Value = 0;
+			experiencePoints.Value = 0;
+			charBackground.Text = "";
+			charAdvantagesDisadvantages.Text = "";
+			charNotes.Text = "";
+			charInventory.Text = "";
 			//..and a checkbox.
-			this.charNPC.Checked = false;
-			this.charNPC.ForeColor = Color.Black;
+			charNPC.Checked = false;
+			charNPC.ForeColor = Color.Black;
 			//Wire up the Attributes data table to the grid view
-			this.attributesDataGridView.DataSource = null;
+			attributesDataGridView.DataSource = null;
 			//Wire up the Skills data tabe to the grid view.
-			this.skillDataGridView.DataSource = null;
+			skillDataGridView.DataSource = null;
 			//Clear point total labels.
-			this.skillPoints.Text = this.skillPoints.Text.Substring(0, this.skillPoints.Text.LastIndexOf(':') + 1) + "0";
-			this.attrPoints.Text = this.attrPoints.Text.Substring(0, this.attrPoints.Text.LastIndexOf(':') + 1) + "0";
+			skillPoints.Text = skillPoints.Text.Substring(0, skillPoints.Text.LastIndexOf(':') + 1) + "0";
+			attrPoints.Text = attrPoints.Text.Substring(0, attrPoints.Text.LastIndexOf(':') + 1) + "0";
 		}
 		
 		/// <summary>
@@ -1287,9 +1260,9 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments.</param>
 		public void PictureFramePanelDoubleClick(object sender, EventArgs e)
 		{
-			if(this.currentCharacter != null) {
+			if(currentCharacter != null) {
 				//Open a file open dialog so the user can find the file
-				OpenFileDialog importDialog = new OpenFileDialog();
+				var importDialog = new OpenFileDialog();
 				importDialog.Title = "Import Character Photo...";
 				importDialog.InitialDirectory = System.Environment.SpecialFolder.MyDocuments.ToString();
 				importDialog.Multiselect = false;
@@ -1298,10 +1271,10 @@ namespace CharSheetV2
 				
 				if (result == DialogResult.OK) {
 					//If we really want this image, read in he bytes and write them to the database.
-					this.currentCharacter.SetCharacterImage(@importDialog.FileName);
+					currentCharacter.SetCharacterImage(@importDialog.FileName);
 					//now that it's written, get the image object from the database.
-					this.charPictureBox.Image = this.currentCharacter.GetCharacterImage();
-					this.notificationLabel.Text = "Image added! Size: " + (importDialog.OpenFile().Length / 1024) + "kb";
+					charPictureBox.Image = currentCharacter.GetCharacterImage();
+					notificationLabel.Text = "Image added! Size: " + (importDialog.OpenFile().Length / 1024) + "kb";
 				}
 			}
 		}
@@ -1313,12 +1286,12 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments.</param>
 		public void CharPictureBoxMouseHover(object sender, EventArgs e)
 		{
-			ToolTip tt = new ToolTip();
+			var tt = new ToolTip();
 			//Check ifwe have an image set and do what is needed.
-			if (this.charPictureBox.Image == null) {
-				tt.SetToolTip(this.charPictureBox, "Double click to add a new picture.");	
+			if (charPictureBox.Image == null) {
+				tt.SetToolTip(charPictureBox, "Double click to add a new picture.");	
 			} else {
-				tt.SetToolTip(this.charPictureBox, this.currentCharacter.characterName + "\nDouble click to replace the\nexisting picture with a new one.");	
+				tt.SetToolTip(charPictureBox, currentCharacter.characterName + "\nDouble click to replace the\nexisting picture with a new one.");	
 			}
 		}
 		
@@ -1330,21 +1303,21 @@ namespace CharSheetV2
 		public void ClearPictureClick(object sender, EventArgs e)
 		{
 			//Make certain we actually have a character selected.
-			if(this.currentCharacter != null) {
+			if(currentCharacter != null) {
 				//Make certin we actually have a picture.
-				if (this.charPictureBox.Image != null) {
-					DialogResult result = MessageBox.Show("This will remove the attached picture from the character profile for: " +  this.currentCharacter.characterName + 
+				if (charPictureBox.Image != null) {
+					DialogResult result = MessageBox.Show("This will remove the attached picture from the character profile for: " +  currentCharacter.characterName + 
 					                                      ". This cannot be undone!\n\nAre you sure?", "Delete Photo", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 					if (result == DialogResult.Yes) {
 						//If we really want to remove the image, delete it from the database and clear the picture box.
-						this.currentCharacter.ClearCharacterImage();
-						this.charPictureBox.Image = null;
-						this.notificationLabel.Text = "Picture for " + this.currentCharacter.characterName + " removed!";
+						currentCharacter.ClearCharacterImage();
+						charPictureBox.Image = null;
+						notificationLabel.Text = "Picture for " + currentCharacter.characterName + " removed!";
 						//Clean up the database (because BLOBs are messy).
-						this.database.VacuumDatabase();
+						database.VacuumDatabase();
 					}
 				} else {
-					this.notificationLabel.Text = this.currentCharacter.characterName + " has no picture. Try adding one first!";
+					notificationLabel.Text = currentCharacter.characterName + " has no picture. Try adding one first!";
 				}
 			}
 		}
@@ -1357,29 +1330,21 @@ namespace CharSheetV2
 		public void CharPictureEnlargeClick(object sender, EventArgs e)
 		{
 			//Ensure that we have a character selected.
-			if(this.currentCharacter != null) {
+			if(currentCharacter != null) {
 				//Ensure that we have a picture loaded.
-				if (this.charPictureBox.Image != null) {
+				if (charPictureBox.Image != null) {
 					//Make a new image viewer window.
-					ImageViewer viewWindow = new ImageViewer();
+					var viewWindow = new ImageViewer();
 					//Set the viewer's picture to this image.
-					viewWindow.SetImage(this.charPictureBox.Image);
+					viewWindow.SetImage(charPictureBox.Image);
 					//Set the viewer width so that it fits on screen
-					if (this.charPictureBox.Image.Width > SystemInformation.VirtualScreen.Width) {
-						viewWindow.Width = SystemInformation.VirtualScreen.Width;
-					} else {
-						viewWindow.Width = this.charPictureBox.Image.Width;					
-					}
+                    viewWindow.Width = charPictureBox.Image.Width > SystemInformation.VirtualScreen.Width ? SystemInformation.VirtualScreen.Width : charPictureBox.Image.Width;
 					//Set the viewer height so that it fits on screen
-					if (this.charPictureBox.Image.Height > SystemInformation.VirtualScreen.Height) {
-						viewWindow.Height = SystemInformation.VirtualScreen.Height;					
-					} else {
-						viewWindow.Height = this.charPictureBox.Image.Height;	
-					}
+                    viewWindow.Height = charPictureBox.Image.Height > SystemInformation.VirtualScreen.Height ? SystemInformation.VirtualScreen.Height : charPictureBox.Image.Height;
 					//Show the viewer on screen
 					viewWindow.Show();
 				} else {
-					this.notificationLabel.Text = "No picture for " + this.currentCharacter.characterName + "! Try adding one first.";
+					notificationLabel.Text = "No picture for " + currentCharacter.characterName + "! Try adding one first.";
 				}
 			}
 		}
@@ -1405,91 +1370,91 @@ namespace CharSheetV2
 			DataGridView currentGridView;
 			switch(type) {
 				case SkillCheckType.ATTRIBUTE:
-					currentGridView = this.attributesDataGridView;
+					currentGridView = attributesDataGridView;
 					break;
 				case SkillCheckType.SKILL:
 				default:
-					currentGridView = this.skillDataGridView;
+					currentGridView = skillDataGridView;
 					break;
 			}
 			
-			if (this.charList.CheckedItems.Count > 1) {
+			if (charList.CheckedItems.Count > 1) {
 				//Handle skill checks for multiple characters
-				String statistics = "";
+				string statistics = "";
 				//Need to confirm more characters for Brawl
-				if(this.brawlers.Count < this.charList.CheckedItems.Count - 1) {
+				if(brawlers.Count < charList.CheckedItems.Count - 1) {
 					if(Convert.ToInt32(currentGridView.Rows[rowIndex].Cells[0].Value) != -1) {
 						//Populate a combatant with stats
-						Combatant fighter = new Combatant();
-						fighter.Name = this.currentCharacter.characterName;
+						var fighter = new Combatant();
+						fighter.Name = currentCharacter.characterName;
 						fighter.Stat = currentGridView.Rows[rowIndex].Cells[2].Value.ToString();
 						fighter.Points = Convert.ToInt32(currentGridView.Rows[rowIndex].Cells[3].Value);
 						fighter.Points += Convert.ToInt32(currentGridView.Rows[rowIndex].Cells[4].Value);
 						
 						//Check if the combatant is already set and update them (or add if new)
-						if (this.brawlers.FindIndex(Combatant=>Combatant.Name.Equals(fighter.Name)) >= 0) {
-							int c = this.brawlers.FindIndex(Combatant=>Combatant.Name.Equals(fighter.Name));
-							this.brawlers[c].Stat = fighter.Stat;
-							this.brawlers[c].Points = fighter.Points;
+						if (brawlers.FindIndex(Combatant=>Combatant.Name.Equals(fighter.Name)) >= 0) {
+							int c = brawlers.FindIndex(Combatant=>Combatant.Name.Equals(fighter.Name));
+							brawlers[c].Stat = fighter.Stat;
+							brawlers[c].Points = fighter.Points;
 						} else {
-							this.brawlers.Add(fighter);
-							this.notificationLabel.Text = this.brawlers.Count + " of " + this.charList.CheckedItems.Count + " selected...";
+							brawlers.Add(fighter);
+							notificationLabel.Text = brawlers.Count + " of " + charList.CheckedItems.Count + " selected...";
 						}
 					} else {
-						this.notificationLabel.Text = "Not a valid row. Try again.";
+						notificationLabel.Text = "Not a valid row. Try again.";
 					}	
 				} else {
 					//On the last fighter, populate their obejct and add them to the list.
-					Combatant fighter = new Combatant();
-					fighter.Name = this.currentCharacter.characterName;
+					var fighter = new Combatant();
+					fighter.Name = currentCharacter.characterName;
 					fighter.Stat = currentGridView.Rows[rowIndex].Cells[2].Value.ToString();
 					fighter.Points = Convert.ToInt32(currentGridView.Rows[rowIndex].Cells[3].Value);
 					fighter.Points += Convert.ToInt32(currentGridView.Rows[rowIndex].Cells[4].Value);
-					this.brawlers.Add(fighter);
+					brawlers.Add(fighter);
 					
 					//Roll GM dice
-					int gmDice = this.RollDie(this.diceSides, Int32.Parse(this.diceCount.Value.ToString()));
+					int gmDice = RollDie(diceSides, Int32.Parse(diceCount.Value.ToString()));
 					statistics += "GM Rolled: " + gmDice + "\n------------\n\n";
 					//Flag failed rolls
-					for( int x = 0; x < this.brawlers.Count; x++) {
-						this.brawlers[x].RollResult = gmDice;
-						if (this.brawlers[x].RollResult == 20 || 
-						    this.brawlers[x].RollResult > this.brawlers[x].Points) {
-							this.brawlers[x].Failed = true;
+					for( int x = 0; x < brawlers.Count; x++) {
+						brawlers[x].RollResult = gmDice;
+						if (brawlers[x].RollResult == 20 || 
+						    brawlers[x].RollResult > brawlers[x].Points) {
+							brawlers[x].Failed = true;
 						}
-						statistics += this.brawlers[x].Name + " with " + this.brawlers[x].Stat + " @ " + this.brawlers[x].Points + "\n\n";
+						statistics += brawlers[x].Name + " with " + brawlers[x].Stat + " @ " + brawlers[x].Points + "\n\n";
 					}
 					//Try to weed out failed rolls
-					List<Combatant> victors = this.brawlers.FindAll(Combatant=>Combatant.Failed == false);
+					List<Combatant> victors = brawlers.FindAll(Combatant=>Combatant.Failed == false);
 					if (victors.Count == 0) {
 						//Everyone failed! Get the one that failed the least
-						Combatant leastLoser = this.brawlers[0];
-						for (int y = 1; y < this.brawlers.Count; y++) {
-							if ((this.brawlers[y].RollResult - this.brawlers[y].Points) < (leastLoser.RollResult - leastLoser.Points)) {
-								leastLoser = this.brawlers[y];
+						Combatant leastLoser = brawlers[0];
+						for (int y = 1; y < brawlers.Count; y++) {
+							if ((brawlers[y].RollResult - brawlers[y].Points) < (leastLoser.RollResult - leastLoser.Points)) {
+								leastLoser = brawlers[y];
 							}
 						}
 						statistics += "------------\n\n" + leastLoser.Name + " failed the least.";
-						this.notificationLabel.Text = "Everyone failed the check but " + leastLoser.Name + 
+						notificationLabel.Text = "Everyone failed the check but " + leastLoser.Name + 
 													  "\nfailed the least ... and succeeded I guess?";
 					} else if (victors.Count == 1){
 						//Only one clear winner
 						statistics += "------------\n\n" + victors[0].Name + " was the clear winner.";
-						this.notificationLabel.Text = victors[0].Name + " beat everyone else out with a roll of " + victors[0].RollResult + "!";
+						notificationLabel.Text = victors[0].Name + " beat everyone else out with a roll of " + victors[0].RollResult + "!";
 					} else {
 						// More than one winner. Who won by more?
-						Combatant biggestWinner = this.brawlers[0];
-						for (int y = 1; y < this.brawlers.Count; y++) {
-							if ((this.brawlers[y].Points - this.brawlers[y].RollResult) > (biggestWinner.Points - biggestWinner.RollResult)) {
-								biggestWinner = this.brawlers[y];
+						Combatant biggestWinner = brawlers[0];
+						for (int y = 1; y < brawlers.Count; y++) {
+							if ((brawlers[y].Points - brawlers[y].RollResult) > (biggestWinner.Points - biggestWinner.RollResult)) {
+								biggestWinner = brawlers[y];
 							}
 						}
 						statistics += "------------\n\n" + biggestWinner.Name + " came out ahead.";
-						this.notificationLabel.Text = "Close, but " + biggestWinner.Name + " succeeded.";
+						notificationLabel.Text = "Close, but " + biggestWinner.Name + " succeeded.";
 					}
 					//Dump the list and mark done.
-					this.brawlers.Clear();
-					this.skillCheck = false;
+					brawlers.Clear();
+					skillCheck = false;
 					//Call out the statistics
 					MessageBox.Show("Statistics:\n\n" + statistics, "Results", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				}
@@ -1500,34 +1465,34 @@ namespace CharSheetV2
 					int points = Convert.ToInt32(currentGridView.Rows[rowIndex].Cells[3].Value);
 					points += Convert.ToInt32(currentGridView.Rows[rowIndex].Cells[4].Value);
 					//Get the GM's die roll
-					int roll = this.RollDie(this.diceSides, Int32.Parse(this.diceCount.Value.ToString()));
+					int roll = RollDie(diceSides, Int32.Parse(diceCount.Value.ToString()));
 					switch (roll) {
 						case 1: //Critical Success
-							this.notificationLabel.Text = "Critical success!\n(Rolled " + roll + ")";
+							notificationLabel.Text = "Critical success!\n(Rolled " + roll + ")";
 							break;
 						case 20: //Critical Failure
-							this.notificationLabel.Text = "Critical failure!\n(Rolled " + roll + ")";
+							notificationLabel.Text = "Critical failure!\n(Rolled " + roll + ")";
 							break;
 						default: //Everything else
 							if (roll > points) {
 								//Failure
-								this.notificationLabel.Text = "Failed!\n(Rolled " + roll + " vs " + points + ")";
+								notificationLabel.Text = "Failed!\n(Rolled " + roll + " vs " + points + ")";
 							} else if ((roll >= points-3) && (roll <= points) ) {
 								//Marginal success
-								this.notificationLabel.Text = "Marginal Success.\n(Rolled " + roll + " vs " + points + ")";
+								notificationLabel.Text = "Marginal Success.\n(Rolled " + roll + " vs " + points + ")";
 							} else {
 								//Success
-								this.notificationLabel.Text = "Success!\n(Rolled " + roll + " vs " + points + ")";
+								notificationLabel.Text = "Success!\n(Rolled " + roll + " vs " + points + ")";
 							}
 							break;
 					}
 					//Skill check complete.
-					this.skillCheck = false;
+					skillCheck = false;
 				} else {
-					this.notificationLabel.Text = "Not a valid row. Try again.";
+					notificationLabel.Text = "Not a valid row. Try again.";
 				}
 			}
-			this.diceCount.Value = 1;
+			diceCount.Value = 1;
 		}
 		
 		/// <summary>
@@ -1537,8 +1502,8 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments.</param>
 		public void SkillDataGridViewRowEnter(object sender, DataGridViewCellEventArgs e)
 		{
-			if (this.skillCheck && !this.switchingChars) {
-				this.SkillCheck(e.RowIndex, SkillCheckType.SKILL);
+			if (skillCheck && !switchingChars) {
+				SkillCheck(e.RowIndex, SkillCheckType.SKILL);
 			}
 		}
 		
@@ -1549,8 +1514,8 @@ namespace CharSheetV2
 		/// <param name="e">The event arguments.</param>
 		public void AttributesDataGridViewRowEnter(object sender, DataGridViewCellEventArgs e)
 		{
-			if (this.skillCheck  && !this.switchingChars) {
-				this.SkillCheck(e.RowIndex, SkillCheckType.ATTRIBUTE);
+			if (skillCheck  && !switchingChars) {
+				SkillCheck(e.RowIndex, SkillCheckType.ATTRIBUTE);
 			}
 		}
 		
@@ -1562,8 +1527,8 @@ namespace CharSheetV2
 		public void ClearCheckedButtonClick(object sender, EventArgs e)
 		{
 			//Go through all items and set them to unchecked.
-			for (int x = 0; x < this.charList.Items.Count; x++) {
-				this.charList.SetItemCheckState(x, CheckState.Unchecked);
+			for (int x = 0; x < charList.Items.Count; x++) {
+				charList.SetItemCheckState(x, CheckState.Unchecked);
 			}
 		}
 	}
@@ -1573,10 +1538,10 @@ namespace CharSheetV2
 	/// </summary>
 	public class Combatant 
 	{
-		public String Name = "";
-		public String Stat = "";
+		public string Name = "";
+		public string Stat = "";
 		public int Points = 0;
 		public int RollResult = 0;
-		public Boolean Failed = false;
+		public bool Failed = false;
 	}
 }

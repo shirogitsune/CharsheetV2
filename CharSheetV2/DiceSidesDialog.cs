@@ -35,8 +35,8 @@ namespace CharSheetV2
 		/// <param name="e"></param>
 		public void Button1Click(object sender, EventArgs e)
 		{
-			this.numberOfDiceSides = Int32.Parse(this.numericUpDown1.Value.ToString());
-			this.Close();
+			numberOfDiceSides = Int32.Parse(numericUpDown1.Value.ToString());
+			Close();
 		}
 		
 		/// <summary>
@@ -46,7 +46,7 @@ namespace CharSheetV2
 		/// <param name="e">arguments</param>
 		public void Button2Click(object sender, EventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 		
 		/// <summary>
@@ -55,7 +55,7 @@ namespace CharSheetV2
 		/// <returns>Dice sides as an integer</returns>
 		public int getDiceSides() 
 		{
-			return this.numberOfDiceSides;	
+			return numberOfDiceSides;	
 		}
 		
 	}

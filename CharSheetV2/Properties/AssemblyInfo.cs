@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("SFRPG Group")]
 [assembly: AssemblyProduct ("CharSheet V2")]
-[assembly: AssemblyCopyright ("Copyright ©2017 Justin Pearce, All rights Reserved.")]
+[assembly: AssemblyCopyright ("Copyright ©2019 Justin Pearce, All rights Reserved.")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 // This sets the default COM visibility of types in the assembly to invisible.

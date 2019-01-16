@@ -30,13 +30,13 @@ namespace CharSheetV2
 		
 		public void Button1Click(object sender, EventArgs e)
 		{
-			this.fatesHandTimerMillis = (int)((this.fatesHandMinutes.Value * 60 ) * 1000);
-			this.Close();
+			fatesHandTimerMillis = (int)((fatesHandMinutes.Value * 60 ) * 1000);
+			Close();
 		}
 		
 		public void Button2Click(object sender, EventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 	}
 }

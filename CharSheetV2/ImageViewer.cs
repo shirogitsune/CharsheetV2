@@ -1,7 +1,5 @@
-﻿/// <summary>
-/// This dialog is for simply viewing a stored character image. That is all.
-/// Author: Justin Pearce <whitefox@guardianfox.net>
-/// </summary>
+﻿// This dialog is for simply viewing a stored character image. That is all.
+// Author: Justin Pearce <whitefox@guardianfox.net>
 
 using System;
 using System.Drawing;
@@ -27,7 +25,7 @@ namespace CharSheetV2
 		/// </summary>
 		/// <param name="characterPicture">Image object to put into the picture box.</param>
 		public void SetImage(Image characterPicture) {
-			this.viewLargerPictureBox.Image = characterPicture;
+			viewLargerPictureBox.Image = characterPicture;
 		}
 	}
 }

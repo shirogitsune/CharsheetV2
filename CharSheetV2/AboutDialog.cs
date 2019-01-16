@@ -1,7 +1,5 @@
-﻿/// <summary>
-/// Simple about dialog that gice information about the program. 
-/// Author: Justin Pearce <whitefox@guardianfox.net>
-/// </summary>
+﻿// Simple about dialog that gice information about the program. 
+// Author: Justin Pearce <whitefox@guardianfox.net>
 
 using System;
 using System.Windows.Forms;
@@ -25,7 +23,7 @@ namespace CharSheetV2
 		/// <param name="e">The event's arguments.</param>
 		public void AboutOkClick(object sender, EventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 	}
 }
