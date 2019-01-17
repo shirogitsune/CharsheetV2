@@ -20,13 +20,15 @@ After talking to JWolfman about what we would like to see, I spent some time wri
 Features
 --------
 * SQLite data store!
+* Supports dice other than D20!
 * Prameterized queries and Unicode support for no character limits!
-* Auto save changes!
+* Auto prompt to save changes!
 * Upload character images into the character profile (with built-in preview)!
 * Attributes and Skills are extensible and flexible between characters.
 * Multi-character versus Skill/Attribute Rolls!
 * Export selected character sheets as text files or separate database file.
-* Fate's Hand: Program randomly selects a character on an interval and calls them out to the game master for evil shenanigans!
+* Fate's Hand: Program randomly selects a character on a configurable interval and calls them out to the game master for evil shenanigans!
+* Application configuration lives with character data so game settings follows the game.
 * Import for older CharSheet 6 data files
 
 Running the program
