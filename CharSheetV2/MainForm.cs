@@ -53,10 +53,7 @@ namespace CharSheetV2
 			notificationLabel.Text = "Shutting down...";
 			if(changesMade || config.IsConfigChanged()){
 				//If changes are flagged, ask the user for direction.
-				DialogResult saveChanges = MessageBox.Show("There were changes made that have not been saved.\nSave changes now?", 
-				                                           "Apply Changes", 
-				                                           MessageBoxButtons.YesNo, 
-				                                           MessageBoxIcon.Exclamation);
+				DialogResult saveChanges = MessageBox.Show("There were changes made that have not been saved.\nSave changes now?", "Apply Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 				if(saveChanges == DialogResult.Yes){
 					
 					//Enumerate over the characters in the list
@@ -141,6 +138,7 @@ namespace CharSheetV2
 			config = new ConfigurationModel(database);
 			config.LoadConfiguration();
 			diceSides = config.GetDiceSides();
+			d20Button.Text = "D"+diceSides.ToString();
 			fatesHand.Interval = config.GetFatesHandTimer();
 			fateTimerToolStripMenuItem.Checked = config.GetFatesHand();
 			FatesHandCheckedStateChanged(this, null);
@@ -291,7 +289,7 @@ namespace CharSheetV2
 		{
 			var fhDialog = new FatesHandDialog(fatesHand.Enabled, fatesHand.Interval);
 			fhDialog.ShowDialog();
-			if (fhDialog.DialogResult != DialogResult.Cancel && fatesHand.Interval != fhDialog.fatesHandTimerMillis){
+			if (fatesHand.Interval != fhDialog.fatesHandTimerMillis){
 				fatesHand.Interval = fhDialog.fatesHandTimerMillis;
 				if ((config != null)) {
 					config.SetFatesHandTimer(fatesHand.Interval);
@@ -313,7 +311,7 @@ namespace CharSheetV2
 		{
 			var dsDialog = new DiceSidesDialog(diceSides);
 			dsDialog.ShowDialog();
-			if (dsDialog.DialogResult != DialogResult.Cancel && diceSides != dsDialog.numberOfDiceSides){
+			if (diceSides != dsDialog.numberOfDiceSides){
 				diceSides = dsDialog.numberOfDiceSides;
 				if ((config != null)) {
 					config.SetDiceSides(diceSides);
@@ -370,7 +368,7 @@ namespace CharSheetV2
 		/// </summary>
 		/// <param name="sender">The sender</param>
 		/// <param name="e">The event arguments</param>
-		public void D20ButtonClick(object sender, EventArgs e)
+		public void DiceButtonClick(object sender, EventArgs e)
 		{
 			//Get the die value  (1D20)
 			int dieValue = RollDie(diceSides, Int32.Parse(diceCount.Value.ToString()));
@@ -379,9 +377,9 @@ namespace CharSheetV2
 			int modValue = 0;
 			if( d20Modifier.SelectedIndex != -1 ){
 				Int32.TryParse(d20Modifier.SelectedItem.ToString(), out modValue);
-				notificationLabel.Text = "Rolled "+diceCount+" D"+diceSides.ToString()+" and got "+(dieValue+modValue)+" ("+modValue+")...";
+				notificationLabel.Text = "Rolled "+diceCount.Value+" D"+diceSides.ToString()+" and got "+(dieValue+modValue)+" ("+modValue+")...";
 			}else{
-				notificationLabel.Text = "Rolled "+diceCount+" D"+diceSides.ToString()+" and got "+dieValue+"...";
+				notificationLabel.Text = "Rolled "+diceCount.Value+" D"+diceSides.ToString()+" and got "+dieValue+"...";
 			}
 			diceCount.Value=1;
 		}

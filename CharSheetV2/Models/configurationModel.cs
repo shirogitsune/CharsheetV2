@@ -78,7 +78,7 @@ namespace CharSheetV2.Models
 				foreach(KeyValuePair<string, string> setting in configurationStore) {
                     database.InsertRecord("config", new string[2]{"configKey", "configValue"}, new string[2]{setting.Key, setting.Value});
 				}
-				if(database.GetRecordCount("config", "cid") > 0){
+				if(database.GetRecordCount("config", "coid") > 0){
 					isVolatile = false;
 					return true;
 				} else {

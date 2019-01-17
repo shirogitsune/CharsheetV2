@@ -949,7 +949,7 @@ namespace CharSheetV2
 			this.d20Button.TabIndex = 1;
 			this.d20Button.Text = "D20";
 			this.d20Button.UseVisualStyleBackColor = true;
-			this.d20Button.Click += new System.EventHandler(this.D20ButtonClick);
+			this.d20Button.Click += new System.EventHandler(this.DiceButtonClick);
 			// 
 			// fatesHand
 			// 
