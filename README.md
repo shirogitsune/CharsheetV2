@@ -37,7 +37,7 @@ Running the program
 To run the program, we only need the three files in the same folder:
 * CharSheetV2.exe
 * System.Data.SQLite.dll (from the DataLayer folder)
-* CharSheetData.db
+* CharSheetData.db (Auto generated if it does not exist already)
 
 The application is portable and requires .NET 4.0 or greater to run.
 
