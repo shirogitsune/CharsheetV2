@@ -41,6 +41,10 @@ To run the program, we only need the three files in the same folder:
 
 The application is portable and requires .NET 4.0 or greater to run.
 
+Download
+-------------------
+[Click here to download.](https://github.com/shirogitsune/CharsheetV2/raw/master/dist/CharSheetV2.zip)
+
 Tip Jar
 -------------------
 
