@@ -21,6 +21,7 @@ Features
 --------
 * SQLite data store!
 * Supports dice other than D20!
+* Separate dialog for arbitrary dice, so your main dice type does not have to be modified.
 * Prameterized queries and Unicode support for no character limits!
 * Auto prompt to save changes!
 * Upload character images into the character profile (with built-in preview)!

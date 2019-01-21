@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Shirogitsune
- * Date: 4/9/2017
- * Time: 9:27 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// This represent the dialog to set the number of dice to default to in the application.
+// Author: Justin Pearce <whitefox@guardianfox.net>
+
 using System;
 using System.Drawing;
 using System.Windows.Forms;

@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Shirogitsune
- * Date: 6/10/2017
- * Time: 9:10 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// This represent the dialog to collect the number of minutes to set Fate's Hand to
+// Author: Justin Pearce <whitefox@guardianfox.net>
+
 using System;
 using System.Drawing;
 using System.Windows.Forms;

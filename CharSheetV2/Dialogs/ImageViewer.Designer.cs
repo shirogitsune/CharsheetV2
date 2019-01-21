@@ -36,7 +36,7 @@ namespace CharSheetV2
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageViewer));
+			var resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageViewer));
 			this.imageViewPanel = new System.Windows.Forms.Panel();
 			this.viewLargerPictureBox = new System.Windows.Forms.PictureBox();
 			this.imageViewPanel.SuspendLayout();

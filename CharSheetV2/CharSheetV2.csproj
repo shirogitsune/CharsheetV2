@@ -83,21 +83,25 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutDialog.cs" />
-    <Compile Include="AboutDialog.Designer.cs">
+    <Compile Include="DataLayer\CharacterDataInterface.cs" />
+    <Compile Include="Dialogs\AboutDialog.cs" />
+    <Compile Include="Dialogs\AboutDialog.Designer.cs">
       <DependentUpon>AboutDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataLayer\CharacterDataInterface.cs" />
-    <Compile Include="DiceSidesDialog.cs" />
-    <Compile Include="DiceSidesDialog.Designer.cs">
+    <Compile Include="Dialogs\DiceRollDialog.cs" />
+    <Compile Include="Dialogs\DiceRollDialog.Designer.cs">
+      <DependentUpon>DiceRollDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\DiceSidesDialog.cs" />
+    <Compile Include="Dialogs\DiceSidesDialog.Designer.cs">
       <DependentUpon>DiceSidesDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="FatesHandDialog.cs" />
-    <Compile Include="FatesHandDialog.Designer.cs">
+    <Compile Include="Dialogs\FatesHandDialog.cs" />
+    <Compile Include="Dialogs\FatesHandDialog.Designer.cs">
       <DependentUpon>FatesHandDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageViewer.cs" />
-    <Compile Include="ImageViewer.Designer.cs">
+    <Compile Include="Dialogs\ImageViewer.cs" />
+    <Compile Include="Dialogs\ImageViewer.Designer.cs">
       <DependentUpon>ImageViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs" />
@@ -111,16 +115,19 @@
     <finally Include="characterDataInterface.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AboutDialog.resx">
+    <EmbeddedResource Include="Dialogs\AboutDialog.resx">
       <DependentUpon>AboutDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DiceSidesDialog.resx">
+    <EmbeddedResource Include="Dialogs\DiceRollDialog.resx">
+      <DependentUpon>DiceRollDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\DiceSidesDialog.resx">
       <DependentUpon>DiceSidesDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FatesHandDialog.resx">
+    <EmbeddedResource Include="Dialogs\FatesHandDialog.resx">
       <DependentUpon>FatesHandDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImageViewer.resx">
+    <EmbeddedResource Include="Dialogs\ImageViewer.resx">
       <DependentUpon>ImageViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
@@ -134,6 +141,7 @@
   <ItemGroup>
     <Folder Include="DataLayer" />
     <Folder Include="Models" />
+    <Folder Include="Dialogs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

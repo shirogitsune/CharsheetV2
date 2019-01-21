@@ -36,7 +36,7 @@ namespace CharSheetV2
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FatesHandDialog));
+			var resources = new System.ComponentModel.ComponentResourceManager(typeof(FatesHandDialog));
 			this.fatesHandMinutes = new System.Windows.Forms.NumericUpDown();
 			this.label1 = new System.Windows.Forms.Label();
 			this.saveButton = new System.Windows.Forms.Button();

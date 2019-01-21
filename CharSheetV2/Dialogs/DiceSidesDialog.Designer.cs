@@ -36,7 +36,7 @@ namespace CharSheetV2
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DiceSidesDialog));
+			var resources = new System.ComponentModel.ComponentResourceManager(typeof(DiceSidesDialog));
 			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
 			this.label1 = new System.Windows.Forms.Label();
 			this.button1 = new System.Windows.Forms.Button();

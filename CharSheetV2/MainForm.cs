@@ -23,6 +23,8 @@ namespace CharSheetV2
 		private bool switchingChars;
 		private bool changesMade;
 		private bool deletingCharacters; 
+		private int altDiceCount = 1;
+		private int altDiceSides = 20;
 		private CharacterDataInterface database;
 		private CharacterSheetModel currentCharacter;
 		private ConfigurationModel config;
@@ -138,7 +140,8 @@ namespace CharSheetV2
 			config = new ConfigurationModel(database);
 			config.LoadConfiguration();
 			diceSides = config.GetDiceSides();
-			d20Button.Text = "D"+diceSides.ToString();
+			altDiceSides = diceSides;
+			d20Button.Text = "Roll D"+diceSides.ToString();
 			fatesHand.Interval = config.GetFatesHandTimer();
 			fateTimerToolStripMenuItem.Checked = config.GetFatesHand();
 			FatesHandCheckedStateChanged(this, null);
@@ -302,6 +305,23 @@ namespace CharSheetV2
 		}
 		
 		/// <summary>
+		/// Opens a dialog to allow the GM to roll an arbitrary number of arbitraty sided dice.
+		/// </summary>
+		/// <param name="sender">The sender</param>
+		/// <param name="e">The event arguments</param>
+        public void RollBtnClick(object sender, EventArgs e)
+        {
+            var diceDialog = new DiceRollDialog(altDiceCount, altDiceSides);
+            diceDialog.ShowDialog();
+            if (diceDialog.DialogResult == DialogResult.OK) {
+                altDiceCount = diceDialog.diceCount;
+                altDiceSides = diceDialog.sideCount;
+                int result = RollDie(altDiceSides, altDiceCount);
+                notificationLabel.Text = "Rolled "+altDiceCount+" D"+altDiceSides+" and got "+(result)+"...";
+            }
+        }
+		
+		/// <summary>
 		/// Opens a dialog allowing for the configuration of the number of dice
 		/// sides to default to.
 		/// </summary>
@@ -316,7 +336,7 @@ namespace CharSheetV2
 				if ((config != null)) {
 					config.SetDiceSides(diceSides);
 				}
-				d20Button.Text = "D"+diceSides.ToString();
+				d20Button.Text = "Roll D"+diceSides.ToString();
 			}
 		}
 		

@@ -40,7 +40,7 @@ namespace CharSheetV2
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+			var resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.ClearCheckedButton = new System.Windows.Forms.Button();
 			this.charList = new System.Windows.Forms.CheckedListBox();
@@ -114,6 +114,7 @@ namespace CharSheetV2
 			this.groupBox8 = new System.Windows.Forms.GroupBox();
 			this.notificationLabel = new System.Windows.Forms.Label();
 			this.groupBox9 = new System.Windows.Forms.GroupBox();
+			this.rollBtn = new System.Windows.Forms.Button();
 			this.diceCount = new System.Windows.Forms.NumericUpDown();
 			this.d20Modifier = new System.Windows.Forms.ComboBox();
 			this.d20Button = new System.Windows.Forms.Button();
@@ -354,10 +355,10 @@ namespace CharSheetV2
 			// 
 			this.experiencePoints.Location = new System.Drawing.Point(181, 187);
 			this.experiencePoints.Maximum = new decimal(new int[] {
-									2000000,
-									0,
-									0,
-									0});
+			2000000,
+			0,
+			0,
+			0});
 			this.experiencePoints.Name = "experiencePoints";
 			this.experiencePoints.Size = new System.Drawing.Size(52, 20);
 			this.experiencePoints.TabIndex = 10;
@@ -376,18 +377,23 @@ namespace CharSheetV2
 			// 
 			this.karmaPoints.Location = new System.Drawing.Point(63, 187);
 			this.karmaPoints.Maximum = new decimal(new int[] {
-									2000000,
-									0,
-									0,
-									0});
+			2000000,
+			0,
+			0,
+			0});
 			this.karmaPoints.Minimum = new decimal(new int[] {
-									2000000,
-									0,
-									0,
-									-2147483648});
+			2000000,
+			0,
+			0,
+			0});
 			this.karmaPoints.Name = "karmaPoints";
 			this.karmaPoints.Size = new System.Drawing.Size(46, 20);
 			this.karmaPoints.TabIndex = 9;
+			this.karmaPoints.Value = new decimal(new int[] {
+			2000000,
+			0,
+			0,
+			0});
 			this.karmaPoints.ValueChanged += new System.EventHandler(this.KarmaPointsValueChanged);
 			// 
 			// label8
@@ -437,11 +443,11 @@ namespace CharSheetV2
 			// 
 			this.charGender.FormattingEnabled = true;
 			this.charGender.Items.AddRange(new object[] {
-									"Male",
-									"Female",
-									"Herm",
-									"Trans",
-									"Other"});
+			"Male",
+			"Female",
+			"Herm",
+			"Trans",
+			"Other"});
 			this.charGender.Location = new System.Drawing.Point(80, 82);
 			this.charGender.Name = "charGender";
 			this.charGender.Size = new System.Drawing.Size(101, 21);
@@ -455,10 +461,10 @@ namespace CharSheetV2
 			this.charAge.Size = new System.Drawing.Size(58, 20);
 			this.charAge.TabIndex = 4;
 			this.charAge.Value = new decimal(new int[] {
-									18,
-									0,
-									0,
-									0});
+			18,
+			0,
+			0,
+			0});
 			this.charAge.ValueChanged += new System.EventHandler(this.CharAgeValueChanged);
 			// 
 			// label6
@@ -698,10 +704,10 @@ namespace CharSheetV2
 			// menuStrip1
 			// 
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.fileToolStripMenuItem,
-									this.characterToolStripMenuItem,
-									this.gMModesToolStripMenuItem,
-									this.helpToolStripMenuItem});
+			this.fileToolStripMenuItem,
+			this.characterToolStripMenuItem,
+			this.gMModesToolStripMenuItem,
+			this.helpToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(875, 24);
@@ -711,10 +717,10 @@ namespace CharSheetV2
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.saveChangesToolStripMenuItem,
-									this.importToolStripMenuItem1,
-									this.importDatabaseToolStripMenuItem,
-									this.quitToolStripMenuItem});
+			this.saveChangesToolStripMenuItem,
+			this.importToolStripMenuItem1,
+			this.importDatabaseToolStripMenuItem,
+			this.quitToolStripMenuItem});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "File";
@@ -739,7 +745,7 @@ namespace CharSheetV2
 			// 
 			this.importDatabaseToolStripMenuItem.Name = "importDatabaseToolStripMenuItem";
 			this.importDatabaseToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-									| System.Windows.Forms.Keys.I)));
+			| System.Windows.Forms.Keys.I)));
 			this.importDatabaseToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.importDatabaseToolStripMenuItem.Text = "Import Database...";
 			this.importDatabaseToolStripMenuItem.Click += new System.EventHandler(this.ImportDatabaseClick);
@@ -755,9 +761,9 @@ namespace CharSheetV2
 			// characterToolStripMenuItem
 			// 
 			this.characterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.newToolStripMenuItem,
-									this.deleteSelectedToolStripMenuItem,
-									this.exportCharsheetToolStripMenuItem});
+			this.newToolStripMenuItem,
+			this.deleteSelectedToolStripMenuItem,
+			this.exportCharsheetToolStripMenuItem});
 			this.characterToolStripMenuItem.Name = "characterToolStripMenuItem";
 			this.characterToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
 			this.characterToolStripMenuItem.Text = "Character";
@@ -774,7 +780,7 @@ namespace CharSheetV2
 			// 
 			this.deleteSelectedToolStripMenuItem.Name = "deleteSelectedToolStripMenuItem";
 			this.deleteSelectedToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-									| System.Windows.Forms.Keys.D)));
+			| System.Windows.Forms.Keys.D)));
 			this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
 			this.deleteSelectedToolStripMenuItem.Text = "Delete Selected...";
 			this.deleteSelectedToolStripMenuItem.Click += new System.EventHandler(this.DeleteSelectedCharacter);
@@ -782,8 +788,8 @@ namespace CharSheetV2
 			// exportCharsheetToolStripMenuItem
 			// 
 			this.exportCharsheetToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.asDatabseToolStripMenuItem,
-									this.asCharsheetsToolStripMenuItem});
+			this.asDatabseToolStripMenuItem,
+			this.asCharsheetsToolStripMenuItem});
 			this.exportCharsheetToolStripMenuItem.Name = "exportCharsheetToolStripMenuItem";
 			this.exportCharsheetToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
 			this.exportCharsheetToolStripMenuItem.Text = "Export Selected";
@@ -805,9 +811,9 @@ namespace CharSheetV2
 			// gMModesToolStripMenuItem
 			// 
 			this.gMModesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.fateTimerToolStripMenuItem,
-									this.configureFatesHandToolStripMenuItem,
-									this.setDefaultDiceSidesToolStripMenuItem});
+			this.fateTimerToolStripMenuItem,
+			this.configureFatesHandToolStripMenuItem,
+			this.setDefaultDiceSidesToolStripMenuItem});
 			this.gMModesToolStripMenuItem.Name = "gMModesToolStripMenuItem";
 			this.gMModesToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
 			this.gMModesToolStripMenuItem.Text = "GM Tools";
@@ -838,7 +844,7 @@ namespace CharSheetV2
 			// helpToolStripMenuItem
 			// 
 			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.aboutToolStripMenuItem});
+			this.aboutToolStripMenuItem});
 			this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
 			this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
 			this.helpToolStripMenuItem.Text = "Help";
@@ -853,7 +859,7 @@ namespace CharSheetV2
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.statusBarLabel});
+			this.statusBarLabel});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 579);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(875, 22);
@@ -889,6 +895,7 @@ namespace CharSheetV2
 			// 
 			// groupBox9
 			// 
+			this.groupBox9.Controls.Add(this.rollBtn);
 			this.groupBox9.Controls.Add(this.diceCount);
 			this.groupBox9.Controls.Add(this.d20Modifier);
 			this.groupBox9.Controls.Add(this.skillDiceButton);
@@ -900,22 +907,33 @@ namespace CharSheetV2
 			this.groupBox9.TabStop = false;
 			this.groupBox9.Text = "Dice";
 			// 
+			// rollBtn
+			// 
+			this.rollBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.rollBtn.Location = new System.Drawing.Point(125, 47);
+			this.rollBtn.Name = "rollBtn";
+			this.rollBtn.Size = new System.Drawing.Size(69, 23);
+			this.rollBtn.TabIndex = 4;
+			this.rollBtn.Text = "Roll...";
+			this.rollBtn.UseVisualStyleBackColor = true;
+			this.rollBtn.Click += new System.EventHandler(this.RollBtnClick);
+			// 
 			// diceCount
 			// 
 			this.diceCount.Location = new System.Drawing.Point(8, 18);
 			this.diceCount.Minimum = new decimal(new int[] {
-									1,
-									0,
-									0,
-									0});
+			1,
+			0,
+			0,
+			0});
 			this.diceCount.Name = "diceCount";
 			this.diceCount.Size = new System.Drawing.Size(42, 20);
 			this.diceCount.TabIndex = 3;
 			this.diceCount.Value = new decimal(new int[] {
-									1,
-									0,
-									0,
-									0});
+			1,
+			0,
+			0,
+			0});
 			// 
 			// d20Modifier
 			// 
@@ -923,20 +941,20 @@ namespace CharSheetV2
 			this.d20Modifier.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.d20Modifier.FormattingEnabled = true;
 			this.d20Modifier.Items.AddRange(new object[] {
-									"-5",
-									"-4",
-									"-3",
-									"-2",
-									"-1",
-									"0",
-									"1",
-									"2",
-									"3",
-									"4",
-									"5"});
-			this.d20Modifier.Location = new System.Drawing.Point(124, 18);
+			"-5",
+			"-4",
+			"-3",
+			"-2",
+			"-1",
+			"0",
+			"1",
+			"2",
+			"3",
+			"4",
+			"5"});
+			this.d20Modifier.Location = new System.Drawing.Point(144, 18);
 			this.d20Modifier.Name = "d20Modifier";
-			this.d20Modifier.Size = new System.Drawing.Size(69, 21);
+			this.d20Modifier.Size = new System.Drawing.Size(49, 21);
 			this.d20Modifier.TabIndex = 2;
 			this.d20Modifier.Text = "Mod";
 			// 
@@ -945,9 +963,9 @@ namespace CharSheetV2
 			this.d20Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.d20Button.Location = new System.Drawing.Point(56, 18);
 			this.d20Button.Name = "d20Button";
-			this.d20Button.Size = new System.Drawing.Size(62, 23);
+			this.d20Button.Size = new System.Drawing.Size(82, 23);
 			this.d20Button.TabIndex = 1;
-			this.d20Button.Text = "D20";
+			this.d20Button.Text = "Roll D20";
 			this.d20Button.UseVisualStyleBackColor = true;
 			this.d20Button.Click += new System.EventHandler(this.DiceButtonClick);
 			// 
@@ -1001,6 +1019,7 @@ namespace CharSheetV2
 			((System.ComponentModel.ISupportInitialize)(this.diceCount)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
+
 		}
 		private System.Windows.Forms.NumericUpDown diceCount;
 		private System.Windows.Forms.ToolStripMenuItem configureFatesHandToolStripMenuItem;
@@ -1061,6 +1080,7 @@ namespace CharSheetV2
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.MenuStrip menuStrip1;
 		private System.Windows.Forms.TextBox charAffiliation;
+		private System.Windows.Forms.Button rollBtn;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.NumericUpDown charAge;
